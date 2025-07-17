@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patients | Pathology Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 bg-white w-64 shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-50" id="sidebar">
+        <div class="flex items-center justify-center h-16 bg-blue-600">
+            <span class="text-white font-bold text-xl">Lab Dashboard</span>
+        </div>
+        <div class="p-4">
+            <div class="flex items-center space-x-4 p-3 mb-6 bg-blue-50 rounded-lg">
+                <div class="relative">
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Lab+Owner&background=0ea5e9&color=fff" alt="User">
+                    <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800" id="loggedInUser">Lab Owner</h4>
+                    <span class="text-xs text-gray-500">Admin</span>
+                </div>
+            </div>
+            
+            <nav>
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</span>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <a href="dashboard.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="patients.html" class="flex items-center space-x-3 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg">
+                        <i class="fas fa-user-injured w-5 text-center"></i>
+                        <span>Patients</span>
+                    </a>
+                    <a href="appointments.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-calendar-alt w-5 text-center"></i>
+                        <span>Appointments</span>
+                    </a>
+                    <a href="tasks.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-tasks w-5 text-center"></i>
+                        <span>Tasks</span>
+                    </a>
+                    <a href="payments.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-rupee-sign w-5 text-center"></i>
+                        <span>Payments</span>
+                    </a>
+                    <a href="reports.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-file-medical w-5 text-center"></i>
+                        <span>Reports</span>
+                    </a>
+                </div>
+                
+                <div class="mt-8">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Settings</span>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-users-cog w-5 text-center"></i>
+                        <span>Staff</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-sliders-h w-5 text-center"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" id="logoutBtn" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Mobile sidebar backdrop -->
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40 md:hidden hidden" id="sidebarBackdrop"></div>
+    
+    <!-- Main content -->
+    <div class="md:ml-64">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="flex items-center justify-between px-4 py-3">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 focus:outline-none md:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="relative mx-4 md:mx-0">
+                        <div class="flex items-center">
+                            <select id="branchSelect" class="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="branch_a">Branch A</option>
+                                <option value="branch_b">Branch B</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 focus:outline-none">
+                        <i class="fas fa-bell text-xl"></i>
+                    </button>
+                    <button class="text-gray-500 focus:outline-none">
+                        <i class="fas fa-question-circle text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Page content -->
+        <main class="p-4">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Patient Management</h1>
+                    <p class="text-gray-600">Manage all patient records and information</p>
+                </div>
+                <button id="addPatientBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center transition duration-150">
+                    <i class="fas fa-plus mr-2"></i> Add Patient
+                </button>
+            </div>
+            
+            <!-- Search and filter -->
+            <div class="bg-white rounded-lg shadow p-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="searchPatient" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                        <div class="relative">
+                            <input type="text" id="searchPatient" placeholder="Search patients..." 
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="filterStatus" class="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
+                        <select id="filterStatus" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all">All</option>
+                            <option value="paid">Paid</option>
+                            <option value="due">Due</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterDate" class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                        <input type="date" id="filterDate" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Patient table -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient ID</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age/Gender</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tests</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="patientsTableBody">
+                            <!-- Patient data will be loaded here -->
+                            <tr>
+                                <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                                    Loading patients...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"> Previous </a>
+                        <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"> Next </a>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">20</span> results
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Previous</span>
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                <a href="#" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"> 1 </a>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"> 2 </a>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"> 3 </a>
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Next</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Patient Modal -->
+    <div id="patientModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-user-injured text-blue-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">Add New Patient</h3>
+                            <div class="mt-2">
+                                <form id="patientForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="hidden" id="patientId">
+                                    <div>
+                                        <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name *</label>
+                                        <input type="text" id="fullName" name="fullName" required 
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="age" class="block text-sm font-medium text-gray-700">Age *</label>
+                                        <input type="number" id="age" name="age" required min="1" max="120" 
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="gender" class="block text-sm font-medium text-gray-700">Gender *</label>
+                                        <select id="gender" name="gender" required 
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="contact" class="block text-sm font-medium text-gray-700">Contact Number *</label>
+                                        <input type="tel" id="contact" name="contact" required 
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="tests" class="block text-sm font-medium text-gray-700">Tests *</label>
+                                        <select id="tests" name="tests" multiple required 
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 h-auto">
+                                            <option value="CBC">Complete Blood Count (CBC)</option>
+                                            <option value="LFT">Liver Function Test (LFT)</option>
+                                            <option value="KFT">Kidney Function Test (KFT)</option>
+                                            <option value="Thyroid">Thyroid Profile</option>
+                                            <option value="Lipid">Lipid Profile</option>
+                                            <option value="Diabetes">Diabetes Panel</option>
+                                            <option value="Urine">Urine Routine</option>
+                                            <option value="Vitamin">Vitamin D</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="visitType" class="block text-sm font-medium text-gray-700">Visit Type *</label>
+                                        <select id="visitType" name="visitType" required 
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="">Select Visit Type</option>
+                                            <option value="Home">Home Collection</option>
+                                            <option value="Lab">Lab Visit</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="branch" class="block text-sm font-medium text-gray-700">Branch *</label>
+                                        <select id="branch" name="branch" required 
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="">Select Branch</option>
+                                            <option value="Branch A">Branch A</option>
+                                            <option value="Branch B">Branch B</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="phlebotomist" class="block text-sm font-medium text-gray-700">Phlebotomist</label>
+                                        <select id="phlebotomist" name="phlebotomist" 
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="">Select Phlebotomist</option>
+                                            <option value="John Doe">John Doe</option>
+                                            <option value="Priya Sharma">Priya Sharma</option>
+                                            <option value="Amit Patel">Amit Patel</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="totalAmount" class="block text-sm font-medium text-gray-700">Total Amount (₹) *</label>
+                                        <input type="number" id="totalAmount" name="totalAmount" required min="0" 
+                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="paymentStatus" class="block text-sm font-medium text-gray-700">Payment Status *</label>
+                                        <select id="paymentStatus" name="paymentStatus" required 
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="">Select Status</option>
+                                            <option value="Paid">Paid</option>
+                                            <option value="Due">Due</option>
+                                            <option value="Partial">Partial</option>
+                                        </select>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+                                        <textarea id="notes" name="notes" rows="2" 
+                                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="savePatientBtn" 
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition duration-150">
+                        Save
+                    </button>
+                    <button type="button" id="cancelPatientBtn" 
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition duration-150">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden transform translate-y-2 opacity-0 transition-all duration-300">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Action completed successfully</span>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/patients.js"></script>
+</body>
+</html>
