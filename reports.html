@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports | Pathology Lab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .spinner {
+      animation: spin 1.5s linear infinite;
+    }
+    
+    .card {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border-left: 4px solid transparent;
+    }
+    
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      border-left-color: #3b82f6;
+    }
+    
+    .progress-bar {
+      transition: width 0.3s ease;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .search-highlight {
+      background-color: #fef08a;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    
+    .filename {
+      max-width: 180px;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50 transition-opacity duration-300">
+    <div class="spinner text-blue-500 text-6xl mb-6">
+      <i class="fas fa-circle-notch"></i>
+    </div>
+    <h2 class="text-2xl font-semibold text-gray-800 mb-2">Loading Reports</h2>
+    <p id="loadingStatus" class="text-gray-600 mb-4">Initializing...</p>
+    
+    <div class="w-64 bg-gray-200 rounded-full h-2.5 mb-2">
+      <div id="progressBar" class="progress-bar bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+    </div>
+    
+    <div class="flex items-center text-gray-500 text-sm">
+      <i class="fas fa-clock mr-2"></i>
+      <span id="timeEstimate">Estimating time remaining...</span>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+      <div class="mb-4 md:mb-0">
+        <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+          <span class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-3">
+            <i class="fas fa-file-medical"></i>
+          </span>
+          Patient Reports
+        </h1>
+        <p class="text-gray-500 mt-1"> </p>
+      </div>
+      
+      <div class="relative w-full md:w-96">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <input type="text" id="searchInput" placeholder="Search by subject or filename..." 
+               class="border border-gray-300 px-4 py-2 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full bg-white shadow-sm">
+      </div>
+    </div>
+    
+    <!-- Stats Bar -->
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-wrap justify-between items-center">
+      <div class="flex items-center mr-4 mb-2 md:mb-0">
+        <div class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-3">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Total Reports</p>
+          <p id="totalReports" class="font-semibold text-gray-800">-</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center">
+        <div class="bg-green-100 text-green-600 p-2 rounded-lg mr-3">
+          <i class="fas fa-calendar-day"></i>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Last Updated</p>
+          <p id="lastUpdated" class="font-semibold text-gray-800">-</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Container -->
+    <div id="reportContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <!-- Empty State -->
+    <div id="noResults" class="text-center py-12 hidden">
+      <div class="bg-gray-100 p-6 rounded-full inline-block mb-4">
+        <i class="fas fa-folder-open text-4xl text-gray-400"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">No reports found</h3>
+      <p class="text-gray-500 max-w-md mx-auto">Try adjusting your search or filter to find what you're looking for.</p>
+    </div>
+  </div>
+
+  <script>
+    const webAppURL = "https://script.google.com/macros/s/AKfycbwttEGS32eL8vJkzeOJabg-Wsu059wvuZCQYjhTL2C8r1O657VUt7wsJq9frGHbMmZOyQ/exec";
+    let allReports = [];
+    let startTime = null;
+    let loadTimer = null;
+
+    // Format date to readable form
+    function formatDate(dateString) {
+      if (!dateString) return 'Date not available';
+      const date = new Date(dateString);
+      
+      // Format date (e.g., "Jan 15, 2023")
+      const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+      const formattedDate = date.toLocaleDateString('en-US', dateOptions);
+      
+      // Format time (e.g., "10:30 AM")
+      const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+      const formattedTime = date.toLocaleTimeString('en-US', timeOptions);
+      
+      return `${formattedDate} at ${formattedTime}`;
+    }
+
+    // Convert Google Drive URL to viewable link (not download)
+    function getViewableUrl(fileUrl) {
+      // If it's a Google Drive file link, convert to preview link
+      if (fileUrl.includes('drive.google.com/file/d/')) {
+        const fileId = fileUrl.match(/file\/d\/([^\/]+)/)[1];
+        return `https://drive.google.com/file/d/${fileId}/view`;
+      }
+      // Return original URL if we can't convert it
+      return fileUrl;
+    }
+
+    // Calculate time remaining
+    function calculateTimeRemaining(loaded, total) {
+      if (!startTime) return "Estimating...";
+      
+      const elapsed = (Date.now() - startTime) / 1000;
+      if (loaded === 0) return "Starting...";
+      
+      const speed = loaded / elapsed;
+      const remaining = (total - loaded) / speed;
+      
+      if (remaining > 60) {
+        return `${Math.ceil(remaining / 60)} min remaining`;
+      } else if (remaining > 2) {
+        return `${Math.ceil(remaining)} sec remaining`;
+      } else {
+        return "Finishing up...";
+      }
+    }
+
+    // Update loading UI
+    function updateLoadingUI(loaded, total) {
+      const progress = Math.min(100, Math.round((loaded / total) * 100));
+      document.getElementById('progressBar').style.width = `${progress}%`;
+      
+      const timeRemaining = calculateTimeRemaining(loaded, total);
+      document.getElementById('timeEstimate').textContent = timeRemaining;
+      
+      document.getElementById('loadingStatus').textContent = 
+        `Loading ${loaded} of ${total} reports (${progress}%)`;
+    }
+
+    // Highlight search terms in text
+    function highlightText(text, searchTerm) {
+      if (!searchTerm) return text;
+      const regex = new RegExp(`(${searchTerm})`, 'gi');
+      return text.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+
+    async function fetchReports() {
+      startTime = Date.now();
+      
+      try {
+        updateLoadingUI(0, 1);
+        const response = await fetch(webAppURL);
+        const data = await response.json();
+        
+        let loaded = 0;
+        const total = data.length;
+        allReports = data;
+        
+        loadTimer = setInterval(() => {
+          loaded = Math.min(loaded + Math.ceil(total / 10), total);
+          updateLoadingUI(loaded, total);
+          
+          if (loaded >= total) {
+            clearInterval(loadTimer);
+            displayReports(data);
+            
+            setTimeout(() => {
+              document.getElementById('loadingOverlay').style.opacity = '0';
+              setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+              }, 300);
+            }, 500);
+          }
+        }, 300);
+        
+      } catch (error) {
+        console.error("Error fetching reports:", error);
+        document.getElementById('loadingStatus').textContent = "Error loading reports";
+        document.getElementById('timeEstimate').textContent = "Please try again later";
+      }
+    }
+
+    function displayReports(reports) {
+      const container = document.getElementById("reportContainer");
+      const noResults = document.getElementById("noResults");
+      container.innerHTML = "";
+
+      document.getElementById('totalReports').textContent = reports.length;
+      document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+
+      if (!reports.length) {
+        noResults.classList.remove("hidden");
+        return;
+      } else {
+        noResults.classList.add("hidden");
+      }
+
+      reports.forEach((report) => {
+        const card = document.createElement("div");
+        card.className = "card bg-white rounded-lg p-6 shadow border border-gray-100 fade-in";
+        
+        const formattedDateTime = formatDate(report.date);
+        const filename = report.fileName || 'report.pdf';
+        const viewableUrl = getViewableUrl(report.fileUrl);
+        
+        card.innerHTML = `
+          <div class="mb-3">
+            <h2 class="text-lg font-semibold text-gray-800 mb-1">${report.subject || 'No subject'}</h2>
+            <p class="text-sm text-gray-500">
+              <i class="fas fa-calendar-alt mr-1"></i>
+              ${formattedDateTime}
+            </p>
+          </div>
+          
+          <div class="flex justify-between items-center border-t border-gray-100 pt-3">
+            <div class="flex items-center overflow-hidden">
+              <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+              <span class="filename truncate" title="${filename}">${filename}</span>
+            </div>
+            <a href="${viewableUrl}" target="_blank" 
+               class="inline-flex items-center px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm whitespace-nowrap">
+              <i class="fas fa-external-link-alt mr-1"></i> View PDF
+            </a>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function filterReports() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll("#reportContainer .card");
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const title = card.querySelector("h2").textContent.toLowerCase();
+        const filename = card.querySelector(".filename").textContent.toLowerCase();
+        
+        if (title.includes(keyword) || filename.includes(keyword)) {
+          card.classList.remove("hidden");
+          
+          if (keyword) {
+            const titleElement = card.querySelector("h2");
+            const filenameElement = card.querySelector(".filename");
+            titleElement.innerHTML = highlightText(titleElement.textContent, keyword);
+            filenameElement.innerHTML = highlightText(filenameElement.textContent, keyword);
+          }
+          
+          visibleCount++;
+        } else {
+          card.classList.add("hidden");
+        }
+      });
+
+      document.getElementById("noResults").classList.toggle("hidden", visibleCount > 0);
+    }
+
+    // Debounce search input
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(filterReports, 300);
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', fetchReports);
+  </script>
+</body>
+</html>
