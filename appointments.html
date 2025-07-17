@@ -6,179 +6,410 @@
     <title>Appointments | Pathology Lab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Custom styles */
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .autocomplete-item:hover {
+            background-color: #f3f4f6;
+        }
+        .multiselect-dropdown {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            min-height: 42px;
+        }
+        .multiselect-tag {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        .multiselect-tag-remove {
+            margin-left: 0.25rem;
+            cursor: pointer;
+        }
+        .multiselect-options {
+            position: absolute;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .multiselect-option {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .multiselect-option:hover {
+            background-color: #f3f4f6;
+        }
+        .multiselect-option.selected {
+            background-color: #e0e7ff;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Sidebar (same as patients.html) -->
-    <!-- Header (same as patients.html) -->
-    
-    <!-- Page content -->
-    <main class="p-4">
-        <div class="mb-6 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800">Appointment Scheduling</h1>
-                <p class="text-gray-600">Manage all patient appointments and visits</p>
-            </div>
-            <button id="addAppointmentBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center transition duration-150">
-                <i class="fas fa-plus mr-2"></i> Schedule Visit
-            </button>
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 bg-white w-64 shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-50" id="sidebar">
+        <div class="flex items-center justify-center h-16 bg-blue-600">
+            <span class="text-white font-bold text-xl">Lab Dashboard</span>
         </div>
-        
-        <!-- Calendar view -->
-        <div class="bg-white rounded-lg shadow p-4 mb-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">Appointment Calendar</h2>
-                <div class="flex items-center space-x-2">
-                    <button id="prevWeek" class="p-2 rounded-full hover:bg-gray-100">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <span id="currentWeek" class="font-medium">June 12 - 18, 2023</span>
-                    <button id="nextWeek" class="p-2 rounded-full hover:bg-gray-100">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+        <div class="p-4">
+            <div class="flex items-center space-x-4 p-3 mb-6 bg-blue-50 rounded-lg">
+                <div class="relative">
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Lab+Owner&background=0ea5e9&color=fff" alt="User">
+                    <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800" id="loggedInUser">Lab Owner</h4>
+                    <span class="text-xs text-gray-500">Admin</span>
                 </div>
             </div>
             
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead>
-                        <tr>
-                            <th class="w-32 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                            <th class="w-40 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">Mon 12</th>
-                            <th class="w-40 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">Tue 13</th>
-                            <th class="w-40 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">Wed 14</th>
-                            <th class="w-40 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">Thu 15</th>
-                            <th class="w-40 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">Fri 16</th>
-                            <th class="w-40 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">Sat 17</th>
-                            <th class="w-40 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">Sun 18</th>
-                        </tr>
-                    </thead>
-                    <tbody id="calendarBody">
-                        <!-- Calendar slots will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
+            <nav>
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</span>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <a href="dashboard.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="patients.html" class="flex items-center space-x-3 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg">
+                        <i class="fas fa-user-injured w-5 text-center"></i>
+                        <span>Patients</span>
+                    </a>
+                    <a href="appointments.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-calendar-alt w-5 text-center"></i>
+                        <span>Appointments</span>
+                    </a>
+                    <a href="tasks.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-tasks w-5 text-center"></i>
+                        <span>Tasks</span>
+                    </a>
+                    <a href="payments.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-rupee-sign w-5 text-center"></i>
+                        <span>Payments</span>
+                    </a>
+                    <a href="reports.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-file-medical w-5 text-center"></i>
+                        <span>Reports</span>
+                    </a>
+                </div>
+                
+                <div class="mt-8">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Settings</span>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-users-cog w-5 text-center"></i>
+                        <span>Staff</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-sliders-h w-5 text-center"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" id="logoutBtn" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
+                        <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </nav>
         </div>
-        
-        <!-- Upcoming appointments -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-lg font-semibold text-gray-800">Upcoming Appointments</h2>
-                <div class="relative">
-                    <select id="appointmentFilter" class="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="all">All Appointments</option>
-                        <option value="today">Today</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                        <i class="fas fa-chevron-down"></i>
+    </div>
+    
+    <!-- Mobile sidebar backdrop -->
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40 md:hidden hidden" id="sidebarBackdrop"></div>
+
+    <div class="md:ml-64">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="flex items-center justify-between px-4 py-3">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 focus:outline-none md:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <!-- Page content -->
+        <main class="p-4">
+            <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Appointment Scheduling</h1>
+                    <p class="text-gray-600"></p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <button id="addAppointmentBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center justify-center transition duration-150">
+                        <i class="fas fa-plus mr-2"></i> Add Appointment
+                    </button>
+                    <div class="relative flex-grow">
+                        <input type="text" id="searchInput" placeholder="Search by patient name..." class="w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button id="clearSearch" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 hidden">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tests</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phlebotomist</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="appointmentsTableBody">
-                        <!-- Appointments will be loaded here -->
-                    </tbody>
-                </table>
+
+           <!-- Updated Filters Section -->
+<div class="bg-white rounded-lg shadow-md p-4 mb-6 overflow-x-auto">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-max">
+        <h3 class="text-lg font-medium text-gray-800">Filters</h3>
+        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div class="flex items-center gap-2">
+                <label for="dateFilter" class="text-sm font-medium text-gray-700 whitespace-nowrap">Date:</label>
+                <select id="dateFilter" class="border border-gray-300 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                    <option value="thisWeek">This Week</option>
+                    <option value="nextWeek">Next Week</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+            <div id="customDateRange" class="hidden flex-col sm:flex-row gap-2">
+                <input type="date" id="startDate" class="border border-gray-300 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <span class="self-center text-gray-500">to</span>
+                <input type="date" id="endDate" class="border border-gray-300 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="statusFilter" class="text-sm font-medium text-gray-700 whitespace-nowrap">Status:</label>
+                <select id="statusFilter" class="border border-gray-300 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all">All</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="visitTypeFilter" class="text-sm font-medium text-gray-700 whitespace-nowrap">Visit Type:</label>
+                <select id="visitTypeFilter" class="border border-gray-300 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all">All</option>
+                    <option value="Home Visit">Home Visit</option>
+                    <option value="Lab Visit">Lab Visit</option>
+                </select>
+            </div>
+            <!-- Add Phlebotomist Filter -->
+            <div class="flex items-center gap-2">
+                <label for="phlebotomistFilter" class="text-sm font-medium text-gray-700 whitespace-nowrap">Phlebotomist:</label>
+                <select id="phlebotomistFilter" class="border border-gray-300 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all">All</option>
+                    <option value="John Doe">John Doe</option>
+                    <option value="Priya Sharma">Priya Sharma</option>
+                    <option value="Amit Patel">Amit Patel</option>
+                </select>
             </div>
         </div>
-    </main>
+    </div>
+</div>
+            <!-- Appointments Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tests</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phlebotomist</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Appointments will be loaded here -->
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">Loading appointments...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <button id="prevPageMobile" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</button>
+                        <button id="nextPageMobile" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</button>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700" id="paginationInfo">
+                                Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">20</span> results
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <button id="prevPage" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Previous</span>
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <div id="pageNumbers" class="flex">
+                                    <!-- Page numbers will be added here -->
+                                </div>
+                                <button id="nextPage" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Next</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
-    <!-- Add/Edit Appointment Modal -->
+    <!-- Add Appointment Modal -->
     <div id="appointmentModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fas fa-calendar-plus text-blue-600"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="appointmentModalTitle">Schedule New Appointment</h3>
-                            <div class="mt-2">
-                                <form id="appointmentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="hidden" id="appointmentId">
-                                    <div class="md:col-span-2">
-                                        <label for="appointmentPatient" class="block text-sm font-medium text-gray-700">Patient *</label>
-                                        <select id="appointmentPatient" name="patient" required 
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="">Select Patient</option>
-                                            <!-- Patients will be loaded here -->
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="appointmentDate" class="block text-sm font-medium text-gray-700">Date *</label>
-                                        <input type="date" id="appointmentDate" name="date" required 
-                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    </div>
-                                    <div>
-                                        <label for="appointmentTime" class="block text-sm font-medium text-gray-700">Time *</label>
-                                        <input type="time" id="appointmentTime" name="time" required 
-                                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    </div>
-                                    <div>
-                                        <label for="appointmentType" class="block text-sm font-medium text-gray-700">Visit Type *</label>
-                                        <select id="appointmentType" name="type" required 
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="">Select Type</option>
-                                            <option value="Home">Home Collection</option>
-                                            <option value="Lab">Lab Visit</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="appointmentPhlebotomist" class="block text-sm font-medium text-gray-700">Phlebotomist</label>
-                                        <select id="appointmentPhlebotomist" name="phlebotomist" 
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="">Select Phlebotomist</option>
-                                            <option value="John Doe">John Doe</option>
-                                            <option value="Priya Sharma">Priya Sharma</option>
-                                            <option value="Amit Patel">Amit Patel</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="appointmentStatus" class="block text-sm font-medium text-gray-700">Status *</label>
-                                        <select id="appointmentStatus" name="status" required 
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="Scheduled">Scheduled</option>
-                                            <option value="Confirmed">Confirmed</option>
-                                            <option value="Completed">Completed</option>
-                                            <option value="Cancelled">Cancelled</option>
-                                        </select>
-                                    </div>
-                                    <div class="md:col-span-2">
-                                        <label for="appointmentNotes" class="block text-sm font-medium text-gray-700">Notes</label>
-                                        <textarea id="appointmentNotes" name="notes" rows="2" 
-                                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                                    </div>
-                                </form>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Schedule New Appointment</h3>
+                    <form id="appointmentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Patient Details Section -->
+                        <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-md font-medium text-gray-800 mb-3">Patient Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="relative">
+                                    <label for="patientName" class="block text-sm font-medium text-gray-700">Patient Name *</label>
+                                    <input type="text" id="patientName" name="patientName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    <div id="patientNameAutocomplete" class="autocomplete-items hidden"></div>
+                                </div>
+                                <div>
+                                    <label for="patientId" class="block text-sm font-medium text-gray-700">Patient ID</label>
+                                    <input type="text" id="patientId" name="patientId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="age" class="block text-sm font-medium text-gray-700">Age *</label>
+                                    <input type="number" id="age" name="age" min="0" max="120" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="gender" class="block text-sm font-medium text-gray-700">Gender *</label>
+                                    <select id="gender" name="gender" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                        <option value="">Select</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="contactNo" class="block text-sm font-medium text-gray-700">Contact No. *</label>
+                                    <input type="tel" id="contactNo" name="contactNo" pattern="[0-9]{10}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="alternateNo" class="block text-sm font-medium text-gray-700">Alternate Number</label>
+                                    <input type="tel" id="alternateNo" name="alternateNo" pattern="[0-9]{10}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                                    <textarea id="address" name="address" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </div>
                             </div>
                         </div>
-                    </div>
+
+                        <!-- Test & Appointment Details Section -->
+                        <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-md font-medium text-gray-800 mb-3">Test & Appointment Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label for="tests" class="block text-sm font-medium text-gray-700">Tests *</label>
+                                    <div class="multiselect-dropdown" id="testsDropdown">
+                                        <div class="selected-tags flex flex-wrap"></div>
+                                        <input type="text" id="testsInput" placeholder="Search tests..." class="w-full border-0 focus:ring-0 focus:outline-none">
+                                        <div class="multiselect-options hidden"></div>
+                                    </div>
+                                    <input type="hidden" id="tests" name="tests" required>
+                                </div>
+                                <div>
+                                    <label for="visitType" class="block text-sm font-medium text-gray-700">Visit Type *</label>
+                                    <select id="visitType" name="visitType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                        <option value="">Select</option>
+                                        <option value="Home Visit">Home Visit</option>
+                                        <option value="Lab Visit">Lab Visit</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="phlebotomist" class="block text-sm font-medium text-gray-700">Assigned Phlebotomist</label>
+                                    <select id="phlebotomist" name="phlebotomist" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Select</option>
+                                        <option value="John Doe">John Doe</option>
+                                        <option value="Priya Sharma">Priya Sharma</option>
+                                        <option value="Amit Patel">Amit Patel</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="branch" class="block text-sm font-medium text-gray-700">Branch</label>
+                                    <select id="branch" name="branch" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="Branch A">Branch A</option>
+                                        <option value="Branch B">Branch B</option>
+                                        <option value="Branch C">Branch C</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="appointmentDate" class="block text-sm font-medium text-gray-700">Date *</label>
+                                    <input type="date" id="appointmentDate" name="appointmentDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="appointmentTime" class="block text-sm font-medium text-gray-700">Time of Visit *</label>
+                                    <input type="time" id="appointmentTime" name="appointmentTime" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="totalAmount" class="block text-sm font-medium text-gray-700">Total Amount (₹) *</label>
+                                    <input type="number" id="totalAmount" name="totalAmount" min="0" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                    <select id="status" name="status" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="Pending" selected>Pending</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="additionalNote" class="block text-sm font-medium text-gray-700">Additional Note</label>
+                                    <textarea id="additionalNote" name="additionalNote" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="filledBy" class="block text-sm font-medium text-gray-700">Filled By</label>
+                                    <input type="text" id="filledBy" name="filledBy" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" id="saveAppointmentBtn" 
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition duration-150">
-                        Save
+                    <button type="button" id="submitAppointment" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Schedule Appointment
                     </button>
-                    <button type="button" id="cancelAppointmentBtn" 
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition duration-150">
+                    <button type="button" id="cancelAppointment" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Cancel
                     </button>
                 </div>
@@ -186,15 +417,991 @@
         </div>
     </div>
 
-    <!-- Toast notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden transform translate-y-2 opacity-0 transition-all duration-300">
-        <div class="flex items-center">
-            <i class="fas fa-check-circle mr-2"></i>
-            <span id="toastMessage">Action completed successfully</span>
+    <!-- View/Edit Appointment Modal -->
+    <div id="viewAppointmentModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="viewAppointmentTitle">Appointment Details</h3>
+                    <form id="viewAppointmentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Patient Details Section -->
+                        <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-md font-medium text-gray-800 mb-3">Patient Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="viewPatientName" class="block text-sm font-medium text-gray-700">Patient Name</label>
+                                    <input type="text" id="viewPatientName" name="patientName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewPatientId" class="block text-sm font-medium text-gray-700">Patient ID</label>
+                                    <input type="text" id="viewPatientId" name="patientId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewAge" class="block text-sm font-medium text-gray-700">Age</label>
+                                    <input type="number" id="viewAge" name="age" min="0" max="120" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewGender" class="block text-sm font-medium text-gray-700">Gender</label>
+                                    <input type="text" id="viewGender" name="gender" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewContactNo" class="block text-sm font-medium text-gray-700">Contact No.</label>
+                                    <input type="tel" id="viewContactNo" name="contactNo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewAlternateNo" class="block text-sm font-medium text-gray-700">Alternate Number</label>
+                                    <input type="tel" id="viewAlternateNo" name="alternateNo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" readonly>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="viewAddress" class="block text-sm font-medium text-gray-700">Address</label>
+                                    <textarea id="viewAddress" name="address" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Test & Appointment Details Section -->
+                        <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-md font-medium text-gray-800 mb-3">Test & Appointment Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label for="viewTests" class="block text-sm font-medium text-gray-700">Tests</label>
+                                    <div class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100 min-h-10" id="viewTests"></div>
+                                </div>
+                                <div>
+                                    <label for="viewVisitType" class="block text-sm font-medium text-gray-700">Visit Type</label>
+                                    <input type="text" id="viewVisitType" name="visitType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewPhlebotomist" class="block text-sm font-medium text-gray-700">Assigned Phlebotomist</label>
+                                    <input type="text" id="viewPhlebotomist" name="phlebotomist" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewBranch" class="block text-sm font-medium text-gray-700">Branch</label>
+                                    <input type="text" id="viewBranch" name="branch" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewAppointmentDate" class="block text-sm font-medium text-gray-700">Date</label>
+                                    <input type="text" id="viewAppointmentDate" name="appointmentDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewAppointmentTime" class="block text-sm font-medium text-gray-700">Time of Visit</label>
+                                    <input type="text" id="viewAppointmentTime" name="appointmentTime" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewTotalAmount" class="block text-sm font-medium text-gray-700">Total Amount (₹)</label>
+                                    <input type="text" id="viewTotalAmount" name="totalAmount" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="viewStatus" class="block text-sm font-medium text-gray-700">Status</label>
+                                    <input type="text" id="viewStatus" name="status" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="viewAdditionalNote" class="block text-sm font-medium text-gray-700">Additional Note</label>
+                                    <textarea id="viewAdditionalNote" name="additionalNote" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="viewFilledBy" class="block text-sm font-medium text-gray-700">Filled By</label>
+                                    <input type="text" id="viewFilledBy" name="filledBy" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="viewCreatedAt" class="block text-sm font-medium text-gray-700">Created At</label>
+                                    <input type="text" id="viewCreatedAt" name="createdAt" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="editAppointmentBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Edit Appointment
+                    </button>
+                    <button type="button" id="closeViewModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="auth.js"></script>
-    <script src="appointments.js"></script>
+    <!-- Edit Appointment Modal -->
+    <div id="editAppointmentModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Edit Appointment</h3>
+                    <form id="editAppointmentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="hidden" id="editAppointmentId" name="appointmentId">
+                        
+                        <!-- Patient Details Section -->
+                        <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-md font-medium text-gray-800 mb-3">Patient Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="editPatientName" class="block text-sm font-medium text-gray-700">Patient Name</label>
+                                    <input type="text" id="editPatientName" name="patientName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="editPatientId" class="block text-sm font-medium text-gray-700">Patient ID</label>
+                                    <input type="text" id="editPatientId" name="patientId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="editAge" class="block text-sm font-medium text-gray-700">Age</label>
+                                    <input type="number" id="editAge" name="age" min="0" max="120" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="editGender" class="block text-sm font-medium text-gray-700">Gender</label>
+                                    <input type="text" id="editGender" name="gender" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="editContactNo" class="block text-sm font-medium text-gray-700">Contact No.</label>
+                                    <input type="tel" id="editContactNo" name="contactNo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label for="editAlternateNo" class="block text-sm font-medium text-gray-700">Alternate Number</label>
+                                    <input type="tel" id="editAlternateNo" name="alternateNo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="editAddress" class="block text-sm font-medium text-gray-700">Address</label>
+                                    <textarea id="editAddress" name="address" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Test & Appointment Details Section -->
+                        <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-md font-medium text-gray-800 mb-3">Test & Appointment Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label for="editTests" class="block text-sm font-medium text-gray-700">Tests</label>
+                                    <div class="multiselect-dropdown" id="editTestsDropdown">
+                                        <div class="selected-tags flex flex-wrap"></div>
+                                        <input type="text" id="editTestsInput" placeholder="Search tests..." class="w-full border-0 focus:ring-0 focus:outline-none">
+                                        <div class="multiselect-options hidden"></div>
+                                    </div>
+                                    <input type="hidden" id="editTests" name="tests">
+                                </div>
+                                <div>
+                                    <label for="editVisitType" class="block text-sm font-medium text-gray-700">Visit Type</label>
+                                    <select id="editVisitType" name="visitType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="Home Visit">Home Visit</option>
+                                        <option value="Lab Visit">Lab Visit</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="editPhlebotomist" class="block text-sm font-medium text-gray-700">Assigned Phlebotomist</label>
+                                    <select id="editPhlebotomist" name="phlebotomist" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Select</option>
+                                        <option value="John Doe">John Doe</option>
+                                        <option value="Priya Sharma">Priya Sharma</option>
+                                        <option value="Amit Patel">Amit Patel</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="editBranch" class="block text-sm font-medium text-gray-700">Branch</label>
+                                    <select id="editBranch" name="branch" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="Branch A">Branch A</option>
+                                        <option value="Branch B">Branch B</option>
+                                        <option value="Branch C">Branch C</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="editAppointmentDate" class="block text-sm font-medium text-gray-700">Date</label>
+                                    <input type="date" id="editAppointmentDate" name="appointmentDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="editAppointmentTime" class="block text-sm font-medium text-gray-700">Time of Visit</label>
+                                    <input type="time" id="editAppointmentTime" name="appointmentTime" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="editTotalAmount" class="block text-sm font-medium text-gray-700">Total Amount (₹)</label>
+                                    <input type="number" id="editTotalAmount" name="totalAmount" min="0" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="editStatus" class="block text-sm font-medium text-gray-700">Status</label>
+                                    <select id="editStatus" name="status" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="editAdditionalNote" class="block text-sm font-medium text-gray-700">Additional Note</label>
+                                    <textarea id="editAdditionalNote" name="additionalNote" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="editFilledBy" class="block text-sm font-medium text-gray-700">Filled By</label>
+                                    <input type="text" id="editFilledBy" name="filledBy" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="saveAppointmentChanges" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Save Changes
+                    </button>
+                    <button type="button" id="cancelEditAppointment" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Sample data - in a real app, this would come from your backend/Google Sheets
+        const samplePatients = [
+            { id: "PAT1234567", name: "Rahul Sharma", age: 32, gender: "Male", contactNo: "9876543210", alternateNo: "9876543211", address: "123, MG Road, Bangalore" },
+            { id: "PAT7654321", name: "Priya Patel", age: 28, gender: "Female", contactNo: "8765432109", alternateNo: "", address: "456, Brigade Road, Bangalore" },
+            { id: "PAT1122334", name: "Amit Kumar", age: 45, gender: "Male", contactNo: "7654321098", alternateNo: "7654321099", address: "789, Koramangala, Bangalore" },
+            { id: "PAT5566778", name: "Neha Gupta", age: 35, gender: "Female", contactNo: "6543210987", alternateNo: "", address: "321, Indiranagar, Bangalore" }
+        ];
+
+        const sampleTests = [
+            "Complete Blood Count (CBC)",
+            "Lipid Profile",
+            "Liver Function Test",
+            "Kidney Function Test",
+            "Thyroid Profile",
+            "Blood Glucose (Fasting)",
+            "Blood Glucose (Post Prandial)",
+            "HbA1c",
+            "Vitamin D",
+            "Vitamin B12",
+            "Urine Routine",
+            "ESR",
+            "CRP",
+            "Dengue NS1 Antigen",
+            "Malaria Parasite",
+            "Widal Test",
+            "HIV 1 & 2",
+            "HBsAg",
+            "HCV Antibody",
+            "PSA"
+        ];
+
+        const sampleAppointments = [
+            {
+                id: "APT1001",
+                patientId: "PAT1234567",
+                patientName: "Rahul Sharma",
+                age: 32,
+                gender: "Male",
+                contactNo: "9876543210",
+                alternateNo: "9876543211",
+                address: "123, MG Road, Bangalore",
+                tests: ["Complete Blood Count (CBC)", "Lipid Profile"],
+                visitType: "Home Visit",
+                phlebotomist: "John Doe",
+                branch: "Branch A",
+                appointmentDate: "2023-06-15",
+                appointmentTime: "10:00",
+                totalAmount: 1200,
+                status: "Pending",
+                additionalNote: "Fasting required for lipid profile",
+                filledBy: "admin@lab.com",
+                createdAt: "2023-06-10 14:30"
+            },
+            {
+                id: "APT1002",
+                patientId: "PAT7654321",
+                patientName: "Priya Patel",
+                age: 28,
+                gender: "Female",
+                contactNo: "8765432109",
+                alternateNo: "",
+                address: "456, Brigade Road, Bangalore",
+                tests: ["Thyroid Profile", "Vitamin D"],
+                visitType: "Lab Visit",
+                phlebotomist: "Priya Sharma",
+                branch: "Branch B",
+                appointmentDate: "2023-06-16",
+                appointmentTime: "11:30",
+                totalAmount: 1500,
+                status: "Completed",
+                additionalNote: "",
+                filledBy: "staff@lab.com",
+                createdAt: "2023-06-11 10:15"
+            }
+        ];
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const addAppointmentBtn = document.getElementById('addAppointmentBtn');
+        const appointmentModal = document.getElementById('appointmentModal');
+        const cancelAppointment = document.getElementById('cancelAppointment');
+        const submitAppointment = document.getElementById('submitAppointment');
+        const appointmentForm = document.getElementById('appointmentForm');
+        const viewAppointmentModal = document.getElementById('viewAppointmentModal');
+        const closeViewModal = document.getElementById('closeViewModal');
+        const editAppointmentBtn = document.getElementById('editAppointmentBtn');
+        const editAppointmentModal = document.getElementById('editAppointmentModal');
+        const cancelEditAppointment = document.getElementById('cancelEditAppointment');
+        const saveAppointmentChanges = document.getElementById('saveAppointmentChanges');
+        const editAppointmentForm = document.getElementById('editAppointmentForm');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const dateFilter = document.getElementById('dateFilter');
+        const customDateRange = document.getElementById('customDateRange');
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+        const statusFilter = document.getElementById('statusFilter');
+        const visitTypeFilter = document.getElementById('visitTypeFilter');
+        const appointmentsTableBody = document.getElementById('appointmentsTableBody');
+        const prevPage = document.getElementById('prevPage');
+        const nextPage = document.getElementById('nextPage');
+        const prevPageMobile = document.getElementById('prevPageMobile');
+        const nextPageMobile = document.getElementById('nextPageMobile');
+        const pageNumbers = document.getElementById('pageNumbers');
+        const paginationInfo = document.getElementById('paginationInfo');
+
+        // Current user (in a real app, this would come from authentication)
+        const currentUser = {
+            name: "Lab Owner",
+            email: "admin@lab.com",
+            role: "Admin"
+        };
+
+        // Initialize the UI
+        document.getElementById('loggedInUser').textContent = currentUser.name;
+        document.getElementById('filledBy').value = currentUser.email;
+
+        // Toggle sidebar on mobile
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarBackdrop.classList.toggle('hidden');
+        });
+
+        sidebarBackdrop.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebarBackdrop.classList.add('hidden');
+        });
+
+        // Appointment Modal
+        addAppointmentBtn.addEventListener('click', () => {
+            appointmentModal.classList.remove('hidden');
+        });
+
+        cancelAppointment.addEventListener('click', () => {
+            appointmentModal.classList.add('hidden');
+            appointmentForm.reset();
+        });
+
+        // View Appointment Modal
+        closeViewModal.addEventListener('click', () => {
+            viewAppointmentModal.classList.add('hidden');
+        });
+
+        // Edit Appointment Modal
+        editAppointmentBtn.addEventListener('click', () => {
+            viewAppointmentModal.classList.add('hidden');
+            editAppointmentModal.classList.remove('hidden');
+        });
+
+        cancelEditAppointment.addEventListener('click', () => {
+            editAppointmentModal.classList.add('hidden');
+        });
+
+        // Patient Name Autocomplete
+        const patientNameInput = document.getElementById('patientName');
+        const patientNameAutocomplete = document.getElementById('patientNameAutocomplete');
+        const patientIdInput = document.getElementById('patientId');
+        const ageInput = document.getElementById('age');
+        const genderInput = document.getElementById('gender');
+        const contactNoInput = document.getElementById('contactNo');
+        const alternateNoInput = document.getElementById('alternateNo');
+        const addressInput = document.getElementById('address');
+
+        patientNameInput.addEventListener('input', function() {
+            const input = this.value.toLowerCase();
+            patientNameAutocomplete.innerHTML = '';
+            
+            if (input.length < 2) {
+                patientNameAutocomplete.classList.add('hidden');
+                return;
+            }
+            
+            const matches = samplePatients.filter(patient => 
+                patient.name.toLowerCase().includes(input)
+            );
+            
+            if (matches.length > 0) {
+                matches.forEach(match => {
+                    const item = document.createElement('div');
+                    item.classList.add('autocomplete-item');
+                    item.textContent = match.name;
+                    item.addEventListener('click', function() {
+                        patientNameInput.value = match.name;
+                        patientIdInput.value = match.id;
+                        ageInput.value = match.age;
+                        genderInput.value = match.gender;
+                        contactNoInput.value = match.contactNo;
+                        alternateNoInput.value = match.alternateNo;
+                        addressInput.value = match.address;
+                        patientNameAutocomplete.classList.add('hidden');
+                    });
+                    patientNameAutocomplete.appendChild(item);
+                });
+                patientNameAutocomplete.classList.remove('hidden');
+            } else {
+                patientNameAutocomplete.classList.add('hidden');
+                // Generate a new patient ID if it's a new patient
+                if (input.length >= 3) {
+                    const newId = 'PAT' + Math.floor(1000000 + Math.random() * 9000000);
+                    patientIdInput.value = newId;
+                }
+            }
+        });
+
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target !== patientNameInput) {
+                patientNameAutocomplete.classList.add('hidden');
+            }
+        });
+
+        // Tests Multiselect Dropdown
+        function setupMultiselect(dropdownId, inputId, optionsId, hiddenInputId) {
+            const dropdown = document.getElementById(dropdownId);
+            const input = document.getElementById(inputId);
+            const options = document.querySelector(`#${dropdownId} .multiselect-options`);
+            const selectedTags = document.querySelector(`#${dropdownId} .selected-tags`);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            
+            let selectedTests = [];
+            
+            // Populate options
+            sampleTests.forEach(test => {
+                const option = document.createElement('div');
+                option.classList.add('multiselect-option');
+                option.textContent = test;
+                option.addEventListener('click', function() {
+                    if (!selectedTests.includes(test)) {
+                        selectedTests.push(test);
+                        updateSelectedTags();
+                    }
+                    input.value = '';
+                    options.classList.add('hidden');
+                });
+                options.appendChild(option);
+            });
+            
+            // Show options when input is focused
+            input.addEventListener('focus', function() {
+                if (selectedTests.length < sampleTests.length) {
+                    options.classList.remove('hidden');
+                }
+            });
+            
+            // Filter options based on input
+            input.addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                const allOptions = options.querySelectorAll('.multiselect-option');
+                
+                allOptions.forEach(option => {
+                    const text = option.textContent.toLowerCase();
+                    if (text.includes(filter) && !selectedTests.includes(option.textContent)) {
+                        option.style.display = 'block';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+                
+                if (filter.length > 0) {
+                    options.classList.remove('hidden');
+                }
+            });
+            
+            // Close options when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!dropdown.contains(event.target)) {
+                    options.classList.add('hidden');
+                }
+            });
+            
+            function updateSelectedTags() {
+                selectedTags.innerHTML = '';
+                selectedTests.forEach(test => {
+                    const tag = document.createElement('span');
+                    tag.classList.add('multiselect-tag');
+                    tag.innerHTML = `${test} <span class="multiselect-tag-remove" data-test="${test}">&times;</span>`;
+                    selectedTags.appendChild(tag);
+                });
+                
+                // Add remove functionality
+                document.querySelectorAll('.multiselect-tag-remove').forEach(removeBtn => {
+                    removeBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const testToRemove = this.getAttribute('data-test');
+                        selectedTests = selectedTests.filter(t => t !== testToRemove);
+                        updateSelectedTags();
+                    });
+                });
+                
+                // Update hidden input
+                hiddenInput.value = selectedTests.join(', ');
+            }
+            
+            return {
+                setSelected: function(tests) {
+                    selectedTests = tests;
+                    updateSelectedTags();
+                },
+                getSelected: function() {
+                    return selectedTests;
+                }
+            };
+        }
+
+        const testsMultiselect = setupMultiselect('testsDropdown', 'testsInput', 'testsOptions', 'tests');
+        const editTestsMultiselect = setupMultiselect('editTestsDropdown', 'editTestsInput', 'editTestsOptions', 'editTests');
+
+        // Form Submission
+        submitAppointment.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Validate required fields
+            if (!patientNameInput.value || !ageInput.value || !genderInput.value || !contactNoInput.value || 
+                !testsMultiselect.getSelected().length || !document.getElementById('visitType').value || 
+                !document.getElementById('appointmentDate').value || !document.getElementById('appointmentTime').value || 
+                !document.getElementById('totalAmount').value) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            // Create new appointment
+            const newAppointment = {
+                id: 'APT' + Math.floor(1000 + Math.random() * 9000),
+                patientId: patientIdInput.value,
+                patientName: patientNameInput.value,
+                age: ageInput.value,
+                gender: genderInput.value,
+                contactNo: contactNoInput.value,
+                alternateNo: alternateNoInput.value,
+                address: addressInput.value,
+                tests: testsMultiselect.getSelected(),
+                visitType: document.getElementById('visitType').value,
+                phlebotomist: document.getElementById('phlebotomist').value,
+                branch: document.getElementById('branch').value,
+                appointmentDate: document.getElementById('appointmentDate').value,
+                appointmentTime: document.getElementById('appointmentTime').value,
+                totalAmount: document.getElementById('totalAmount').value,
+                status: document.getElementById('status').value,
+                additionalNote: document.getElementById('additionalNote').value,
+                filledBy: currentUser.email,
+                createdAt: new Date().toISOString()
+            };
+            
+            // In a real app, you would save this to your backend/Google Sheets
+            sampleAppointments.push(newAppointment);
+            
+            // Close modal and reset form
+            appointmentModal.classList.add('hidden');
+            appointmentForm.reset();
+            testsMultiselect.setSelected([]);
+            
+            // Refresh appointments table
+            renderAppointments();
+            
+            alert('Appointment scheduled successfully!');
+        });
+
+        // Save edited appointment
+        saveAppointmentChanges.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const appointmentId = document.getElementById('editAppointmentId').value;
+            const appointment = sampleAppointments.find(apt => apt.id === appointmentId);
+            
+            if (appointment) {
+                // Update appointment details
+                appointment.alternateNo = document.getElementById('editAlternateNo').value;
+                appointment.address = document.getElementById('editAddress').value;
+                appointment.tests = editTestsMultiselect.getSelected();
+                appointment.visitType = document.getElementById('editVisitType').value;
+                appointment.phlebotomist = document.getElementById('editPhlebotomist').value;
+                appointment.branch = document.getElementById('editBranch').value;
+                appointment.appointmentDate = document.getElementById('editAppointmentDate').value;
+                appointment.appointmentTime = document.getElementById('editAppointmentTime').value;
+                appointment.totalAmount = document.getElementById('editTotalAmount').value;
+                appointment.status = document.getElementById('editStatus').value;
+                appointment.additionalNote = document.getElementById('editAdditionalNote').value;
+                appointment.filledBy = currentUser.email;
+                
+                // Close modal
+                editAppointmentModal.classList.add('hidden');
+                
+                // Refresh appointments table
+                renderAppointments();
+                
+                alert('Appointment updated successfully!');
+            }
+        });
+
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            if (this.value) {
+                clearSearch.classList.remove('hidden');
+            } else {
+                clearSearch.classList.add('hidden');
+            }
+            renderAppointments();
+        });
+
+        clearSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            this.classList.add('hidden');
+            renderAppointments();
+        });
+
+        // Filter functionality
+        dateFilter.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customDateRange.classList.remove('hidden');
+            } else {
+                customDateRange.classList.add('hidden');
+            }
+            renderAppointments();
+        });
+
+        [startDate, endDate, statusFilter, visitTypeFilter].forEach(filter => {
+            filter.addEventListener('change', renderAppointments);
+        });
+
+        // Pagination
+        let currentPage = 1;
+        const appointmentsPerPage = 5;
+
+        prevPage.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderAppointments();
+            }
+        });
+
+        nextPage.addEventListener('click', () => {
+            if (currentPage * appointmentsPerPage < filteredAppointments.length) {
+                currentPage++;
+                renderAppointments();
+            }
+        });
+
+        prevPageMobile.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderAppointments();
+            }
+        });
+
+        nextPageMobile.addEventListener('click', () => {
+            if (currentPage * appointmentsPerPage < filteredAppointments.length) {
+                currentPage++;
+                renderAppointments();
+            }
+        });
+
+        // Filter and render appointments
+        let filteredAppointments = [];
+
+        function filterAppointments() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const status = statusFilter.value;
+            const visitType = visitTypeFilter.value;
+            const dateFilterValue = dateFilter.value;
+            
+            filteredAppointments = sampleAppointments.filter(appointment => {
+                // Search by patient name
+                if (searchTerm && !appointment.patientName.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+                
+                // Filter by status
+                if (status !== 'all' && appointment.status !== status) {
+                    return false;
+                }
+                
+                // Filter by visit type
+                if (visitType !== 'all' && appointment.visitType !== visitType) {
+                    return false;
+                }
+                
+                // Filter by date
+                const appointmentDate = new Date(appointment.appointmentDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                if (dateFilterValue === 'today' && appointmentDate.getTime() !== today.getTime()) {
+                    return false;
+                }
+                
+                if (dateFilterValue === 'tomorrow' && appointmentDate.getTime() !== tomorrow.getTime()) {
+                    return false;
+                }
+                
+                if (dateFilterValue === 'thisWeek') {
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - today.getDay());
+                    
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6);
+                    
+                    if (appointmentDate < startOfWeek || appointmentDate > endOfWeek) {
+                        return false;
+                    }
+                }
+                
+                if (dateFilterValue === 'nextWeek') {
+                    const nextWeekStart = new Date(today);
+                    nextWeekStart.setDate(today.getDate() + (7 - today.getDay()));
+                    
+                    const nextWeekEnd = new Date(nextWeekStart);
+                    nextWeekEnd.setDate(nextWeekStart.getDate() + 6);
+                    
+                    if (appointmentDate < nextWeekStart || appointmentDate > nextWeekEnd) {
+                        return false;
+                    }
+                }
+                
+                if (dateFilterValue === 'custom' && startDate.value && endDate.value) {
+                    const start = new Date(startDate.value);
+                    const end = new Date(endDate.value);
+                    
+                    if (appointmentDate < start || appointmentDate > end) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            // Sort by date (newest first)
+            filteredAppointments.sort((a, b) => {
+                const dateA = new Date(a.appointmentDate + ' ' + a.appointmentTime);
+                const dateB = new Date(b.appointmentDate + ' ' + b.appointmentTime);
+                return dateA - dateB;
+            });
+        }
+
+        function renderAppointments() {
+            filterAppointments();
+            
+            const startIndex = (currentPage - 1) * appointmentsPerPage;
+            const endIndex = startIndex + appointmentsPerPage;
+            const paginatedAppointments = filteredAppointments.slice(startIndex, endIndex);
+            
+            appointmentsTableBody.innerHTML = '';
+            
+            if (paginatedAppointments.length === 0) {
+                appointmentsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No appointments found</td>
+                    </tr>
+                `;
+            } else {
+                paginatedAppointments.forEach(appointment => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 cursor-pointer';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(appointment.patientName.split(' ')[0])}&background=random" alt="">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${appointment.patientName}</div>
+                                    <div class="text-sm text-gray-500">${appointment.patientId}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${formatDate(appointment.appointmentDate)}</div>
+                            <div class="text-sm text-gray-500">${formatTime(appointment.appointmentTime)}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900 max-w-xs truncate">${appointment.tests.join(', ')}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${appointment.phlebotomist || '-'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${appointment.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                ${appointment.status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="text-blue-600 hover:text-blue-900 view-btn" data-id="${appointment.id}">View</button>
+                        </td>
+                    `;
+                    appointmentsTableBody.appendChild(row);
+                });
+            }
+            
+            // Update pagination info
+            const totalAppointments = filteredAppointments.length;
+            const startItem = startIndex + 1;
+            const endItem = Math.min(startIndex + appointmentsPerPage, totalAppointments);
+            
+            paginationInfo.innerHTML = `
+                Showing <span class="font-medium">${startItem}</span> to <span class="font-medium">${endItem}</span> of <span class="font-medium">${totalAppointments}</span> results
+            `;
+            
+            // Update pagination buttons
+            prevPage.disabled = currentPage === 1;
+            nextPage.disabled = endIndex >= totalAppointments;
+            prevPageMobile.disabled = currentPage === 1;
+            nextPageMobile.disabled = endIndex >= totalAppointments;
+            
+            // Update page numbers
+            pageNumbers.innerHTML = '';
+            const totalPages = Math.ceil(totalAppointments / appointmentsPerPage);
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `relative inline-flex items-center px-4 py-2 border text-sm font-medium ${i === currentPage ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    renderAppointments();
+                });
+                pageNumbers.appendChild(pageBtn);
+            }
+            
+                        document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appointmentId = this.getAttribute('data-id');
+                    viewAppointment(appointmentId);
+                });
+            });
+        }
+
+        function viewAppointment(appointmentId) {
+            const appointment = sampleAppointments.find(apt => apt.id === appointmentId);
+            
+            if (appointment) {
+                // Fill the view modal with appointment data
+                document.getElementById('viewPatientName').value = appointment.patientName;
+                document.getElementById('viewPatientId').value = appointment.patientId;
+                document.getElementById('viewAge').value = appointment.age;
+                document.getElementById('viewGender').value = appointment.gender;
+                document.getElementById('viewContactNo').value = appointment.contactNo;
+                document.getElementById('viewAlternateNo').value = appointment.alternateNo;
+                document.getElementById('viewAddress').value = appointment.address;
+                document.getElementById('viewTests').textContent = appointment.tests.join(', ');
+                document.getElementById('viewVisitType').value = appointment.visitType;
+                document.getElementById('viewPhlebotomist').value = appointment.phlebotomist || '-';
+                document.getElementById('viewBranch').value = appointment.branch;
+                document.getElementById('viewAppointmentDate').value = formatDate(appointment.appointmentDate);
+                document.getElementById('viewAppointmentTime').value = formatTime(appointment.appointmentTime);
+                document.getElementById('viewTotalAmount').value = '₹' + appointment.totalAmount;
+                document.getElementById('viewStatus').value = appointment.status;
+                document.getElementById('viewAdditionalNote').value = appointment.additionalNote || '-';
+                document.getElementById('viewFilledBy').value = appointment.filledBy;
+                document.getElementById('viewCreatedAt').value = formatDateTime(appointment.createdAt);
+                
+                // Set the title
+                document.getElementById('viewAppointmentTitle').textContent = `Appointment #${appointment.id}`;
+                
+                // Fill the edit form with appointment data
+                document.getElementById('editAppointmentId').value = appointment.id;
+                document.getElementById('editPatientName').value = appointment.patientName;
+                document.getElementById('editPatientId').value = appointment.patientId;
+                document.getElementById('editAge').value = appointment.age;
+                document.getElementById('editGender').value = appointment.gender;
+                document.getElementById('editContactNo').value = appointment.contactNo;
+                document.getElementById('editAlternateNo').value = appointment.alternateNo;
+                document.getElementById('editAddress').value = appointment.address;
+                editTestsMultiselect.setSelected(appointment.tests);
+                document.getElementById('editVisitType').value = appointment.visitType;
+                document.getElementById('editPhlebotomist').value = appointment.phlebotomist || '';
+                document.getElementById('editBranch').value = appointment.branch;
+                document.getElementById('editAppointmentDate').value = appointment.appointmentDate;
+                document.getElementById('editAppointmentTime').value = appointment.appointmentTime;
+                document.getElementById('editTotalAmount').value = appointment.totalAmount;
+                document.getElementById('editStatus').value = appointment.status;
+                document.getElementById('editAdditionalNote').value = appointment.additionalNote || '';
+                document.getElementById('editFilledBy').value = appointment.filledBy;
+                
+                // Show the view modal
+                viewAppointmentModal.classList.remove('hidden');
+            }
+        }
+
+        // Helper functions for formatting dates and times
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Initialize the appointments table
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAppointments();
+            
+            // Set today's date as default for appointment date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').value = today;
+            
+            // Set current time + 1 hour as default for appointment time
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('appointmentTime').value = `${hours}:${minutes}`;
+            
+            // Set default dates for custom date range
+            const defaultStartDate = new Date();
+            defaultStartDate.setDate(defaultStartDate.getDate() - 7);
+            const defaultEndDate = new Date();
+            
+            startDate.value = defaultStartDate.toISOString().split('T')[0];
+            endDate.value = defaultEndDate.toISOString().split('T')[0];
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout?')) {
+                // In a real app, this would redirect to logout page
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Branch selection
+        document.getElementById('branchSelect').addEventListener('change', function() {
+            // In a real app, this would filter appointments by branch
+            renderAppointments();
+        });
+    </script>
 </body>
 </html>
