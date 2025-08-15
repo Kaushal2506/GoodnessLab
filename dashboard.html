@@ -31,8 +31,16 @@
     </script>
 </head>
 <body class="bg-gray-50">
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+            <p class="mt-4 text-gray-700">Loading dashboard...</p>
+        </div>
+    </div>
+
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 bg-white w-64 shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-50" id="sidebar">
+    <div class="fixed inset-y-0 left-0 bg-white w-64 shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-40" id="sidebar">
         <div class="flex items-center justify-center h-16 bg-blue-600">
             <span class="text-white font-bold text-xl">Lab Dashboard</span>
         </div>
@@ -101,7 +109,7 @@
     </div>
     
     <!-- Mobile sidebar backdrop -->
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40 md:hidden hidden" id="sidebarBackdrop"></div>
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 md:hidden hidden" id="sidebarBackdrop"></div>
     
     <!-- Main content -->
     <div class="md:ml-64">
@@ -126,8 +134,9 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 focus:outline-none">
+                    <button class="text-gray-500 focus:outline-none relative" id="notificationsBtn">
                         <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
                     </button>
                     <button class="text-gray-500 focus:outline-none">
                         <i class="fas fa-question-circle text-xl"></i>
@@ -270,14 +279,101 @@
     </div>
 
     <!-- Toast notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden transform translate-y-2 opacity-0 transition-all duration-300">
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden transform translate-y-2 opacity-0 transition-all duration-300 z-50">
         <div class="flex items-center">
             <i class="fas fa-check-circle mr-2"></i>
             <span id="toastMessage">Action completed successfully</span>
         </div>
     </div>
 
-    <script src="auth.js"></script>
-    <script src="app.js"></script>
+    <script>
+        // Simple authentication check (replace with your actual auth logic)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is authenticated (this is a simple example)
+            const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+            
+            if (!isAuthenticated) {
+                // Redirect to login if not authenticated
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Initialize the dashboard
+            initDashboard();
+        });
+
+        function initDashboard() {
+            // Sidebar toggle functionality
+            const sidebar = document.getElementById('sidebar');
+            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarBackdrop.classList.toggle('hidden');
+            });
+
+            sidebarBackdrop.addEventListener('click', function() {
+                sidebar.classList.add('-translate-x-full');
+                sidebarBackdrop.classList.add('hidden');
+            });
+
+            // Logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Clear authentication
+                    localStorage.removeItem('isAuthenticated');
+                    // Redirect to login
+                    window.location.href = 'login.html';
+                });
+            }
+
+            // Branch select change handler
+            const branchSelect = document.getElementById('branchSelect');
+            if (branchSelect) {
+                branchSelect.addEventListener('change', function() {
+                    showToast('Branch changed successfully');
+                    // Here you would typically reload data for the selected branch
+                });
+            }
+
+            // Notifications button
+            const notificationsBtn = document.getElementById('notificationsBtn');
+            if (notificationsBtn) {
+                notificationsBtn.addEventListener('click', function() {
+                    showToast('Notifications feature coming soon!');
+                });
+            }
+
+            // Hide loading overlay
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 800);
+
+            // Simulate loading data (replace with actual API calls)
+            setTimeout(() => {
+                // Update stats with "real" data
+                document.getElementById('todayAppointments').textContent = '15';
+                document.getElementById('pendingReports').textContent = '5';
+                document.getElementById('duePayments').textContent = '₹7,890';
+            }, 1000);
+        }
+
+        // Toast notification function
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden', 'opacity-0', 'translate-y-2');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
