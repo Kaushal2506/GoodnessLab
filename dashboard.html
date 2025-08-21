@@ -1,379 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Pathology Lab</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/custom.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        }
-                    }
-                }
-            }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Goodness Healthcare — Dashboard</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind theme tweaks (optional)
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['ui-sans-serif','system-ui','Inter','Segoe UI','Roboto','Helvetica','Arial','sans-serif'] },
+          colors: {
+            brand: {
+              50:'#eefaff',100:'#d8f1ff',200:'#b9e5ff',300:'#8fd6ff',400:'#5ec2ff',
+              500:'#2aa7ff',600:'#1b83db',700:'#1767ad',800:'#174f83',900:'#163f66',
+            },
+          },
+          boxShadow: {
+            'smooth': '0 10px 30px rgba(2, 8, 23, .08)',
+          },
+          backgroundImage: {
+            'brand-grad': 'linear-gradient(135deg, #2aa7ff 0%, #8D6BFF 50%, #FF7AD9 100%)',
+            'card-grad': 'linear-gradient(180deg, rgba(255,255,255,.80), rgba(255,255,255,.65))',
+          },
         }
-    </script>
+      }
+    }
+  </script>
+
+  <style>
+    /* Subtle frosted cards */
+    .glass {
+      backdrop-filter: saturate(1.2) blur(8px);
+      -webkit-backdrop-filter: saturate(1.2) blur(8px);
+      background: rgba(255,255,255,0.75);
+    }
+    /* Smooth hover lift for cards / links */
+    .lift:hover { transform: translateY(-2px); }
+    .transition-basic { transition: all .2s ease; }
+    /* Responsive iframe wrapper (fills remaining height) */
+    .fill-iframe { height: calc(100vh - 220px); } /* adjusts for topbar + breadcrumb area */
+    @media (min-width: 1024px) {
+      .fill-iframe { height: calc(100vh - 180px); }
+    }
+  </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Loading overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center">
-        <div class="text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-            <p class="mt-4 text-gray-700">Loading dashboard...</p>
+<body class="min-h-screen bg-gradient-to-br from-sky-50 via-indigo-50 to-rose-50 text-slate-800">
+
+  <!-- Decorative gradient ribbon -->
+  <div class="h-1.5 w-full bg-brand-grad"></div>
+
+  <!-- Topbar -->
+  <header class="sticky top-0 z-40 bg-white/80 glass shadow-smooth">
+    <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3 py-3">
+        <!-- Logo: square with rounded corners -->
+        <div class="h-10 w-10 rounded-lg overflow-hidden ring-1 ring-slate-200 flex items-center justify-center">
+          <!-- Replace src with your real logo if available -->
+          <img alt="Goodness Healthcare Logo" class="h-full w-full object-cover"
+               src="data:image/svg+xml;utf8,
+               <svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>
+                 <defs>
+                   <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+                     <stop offset='0%' stop-color='%232aa7ff'/>
+                     <stop offset='50%' stop-color='%238D6BFF'/>
+                     <stop offset='100%' stop-color='%23FF7AD9'/>
+                   </linearGradient>
+                 </defs>
+                 <rect width='160' height='160' rx='18' fill='url(%23g)'/>
+                 <g fill='%23ffffff'>
+                   <circle cx='55' cy='80' r='26'/>
+                   <rect x='88' y='54' width='20' height='52' rx='10'/>
+                   <rect x='68' y='70' width='60' height='20' rx='10'/>
+                 </g>
+               </svg>"/>
         </div>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 bg-white w-64 shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-40" id="sidebar">
-        <div class="flex items-center justify-center h-16 bg-blue-600">
-            <span class="text-white font-bold text-xl">Lab Dashboard</span>
+        <div class="flex-1">
+          <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">Goodness Healthcare</h1>
+          <p class="text-xs sm:text-sm text-slate-600">Internal Pathology Lab Management</p>
         </div>
-        <div class="p-4">
-            <div class="flex items-center space-x-4 p-3 mb-6 bg-blue-50 rounded-lg">
-                <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Lab+Owner&background=0ea5e9&color=fff" alt="User">
-                    <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-gray-800" id="loggedInUser">Lab Owner</h4>
-                    <span class="text-xs text-gray-500">Admin</span>
-                </div>
+
+        <!-- Mobile sidebar toggle -->
+        <button id="sidebarToggle" class="lg:hidden px-3 py-2 rounded-lg bg-white ring-1 ring-slate-200 hover:ring-brand-300 transition-basic"
+                aria-label="Toggle menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main layout -->
+  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex gap-6">
+      <!-- Sidebar -->
+      <aside id="sidebar"
+             class="glass w-72 shrink-0 rounded-2xl p-4 ring-1 ring-white/40 shadow-smooth transition-basic
+                    fixed inset-y-20 left-4 z-30 translate-x-[-120%] lg:translate-x-0
+                    lg:static lg:inset-auto lg:left-auto lg:z-auto">
+        <!-- Signed-in user summary + Sign Out -->
+        <div class="mb-4 rounded-xl bg-white/70 p-3 ring-1 ring-slate-200">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full bg-brand-100 ring-1 ring-brand-300 flex items-center justify-center text-brand-700 font-semibold select-none" id="userAvatar">U</div>
+            <div class="min-w-0">
+              <p id="userName" class="truncate font-semibold text-sm">—</p>
+              <p id="userEmail" class="truncate text-xs text-slate-600">—</p>
             </div>
-            
-            <nav>
-                <div>
-                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</span>
-                </div>
-                <div class="mt-3 space-y-1">
-                    <a href="dashboard.html" class="flex items-center space-x-3 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg">
-                        <i class="fas fa-tachometer-alt w-5 text-center"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="patients.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
-                        <i class="fas fa-user-injured w-5 text-center"></i>
-                        <span>Patients</span>
-                    </a>
-                    <a href="appointments.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
-                        <i class="fas fa-calendar-alt w-5 text-center"></i>
-                        <span>Appointments</span>
-                    </a>
-                    <a href="tasks.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
-                        <i class="fas fa-tasks w-5 text-center"></i>
-                        <span>Tasks</span>
-                    </a>
-                    <a href="payments.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
-                        <i class="fas fa-rupee-sign w-5 text-center"></i>
-                        <span>Payments</span>
-                    </a>
-                    <a href="reports.html" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
-                        <i class="fas fa-file-medical w-5 text-center"></i>
-                        <span>Reports</span>
-                    </a>
-                </div>
-                
-                <div class="mt-8">
-                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Settings</span>
-                </div>
-                <div class="mt-3 space-y-1">
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
-                        <i class="fas fa-users-cog w-5 text-center"></i>
-                        <span>Staff</span>
-                    </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
-                        <i class="fas fa-sliders-h w-5 text-center"></i>
-                        <span>Settings</span>
-                    </a>
-                    <a href="#" id="logoutBtn" class="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-150">
-                        <i class="fas fa-sign-out-alt w-5 text-center"></i>
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </nav>
+          </div>
+          <button id="signOutBtn"
+                  class="mt-3 w-full rounded-lg bg-gradient-to-r from-brand-500 to-violet-500 py-2 text-white text-sm font-medium shadow-sm hover:shadow
+                         active:scale-[.99] transition-basic">
+            Sign Out
+          </button>
         </div>
-    </div>
-    
-    <!-- Mobile sidebar backdrop -->
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 md:hidden hidden" id="sidebarBackdrop"></div>
-    
-    <!-- Main content -->
-    <div class="md:ml-64">
-        <!-- Header -->
-        <header class="bg-white shadow-sm">
-            <div class="flex items-center justify-between px-4 py-3">
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="text-gray-500 focus:outline-none md:hidden">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                    <div class="relative mx-4 md:mx-0">
-                        <div class="flex items-center">
-                            <select id="branchSelect" class="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="branch_a">Branch A</option>
-                                <option value="branch_b">Branch B</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 focus:outline-none relative" id="notificationsBtn">
-                        <i class="fas fa-bell text-xl"></i>
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
-                    </button>
-                    <button class="text-gray-500 focus:outline-none">
-                        <i class="fas fa-question-circle text-xl"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
-        
-        <!-- Page content -->
-        <main class="p-4">
-            <div class="mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
-                <p class="text-gray-600">Welcome back! Here's what's happening with your lab today.</p>
-            </div>
-            
-            <!-- Stats cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Today's Appointments</p>
-                            <p class="text-2xl font-semibold text-gray-800 mt-1" id="todayAppointments">12</p>
-                        </div>
-                        <div class="bg-blue-100 p-3 rounded-full">
-                            <i class="fas fa-calendar-day text-blue-600 text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <a href="appointments.html" class="text-sm font-medium text-blue-600 hover:text-blue-700">View all →</a>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-orange-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Pending Reports</p>
-                            <p class="text-2xl font-semibold text-gray-800 mt-1" id="pendingReports">8</p>
-                        </div>
-                        <div class="bg-orange-100 p-3 rounded-full">
-                            <i class="fas fa-file-medical text-orange-600 text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <a href="reports.html" class="text-sm font-medium text-blue-600 hover:text-blue-700">View all →</a>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Due Payments</p>
-                            <p class="text-2xl font-semibold text-gray-800 mt-1" id="duePayments">₹5,420</p>
-                        </div>
-                        <div class="bg-green-100 p-3 rounded-full">
-                            <i class="fas fa-rupee-sign text-green-600 text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <a href="payments.html" class="text-sm font-medium text-blue-600 hover:text-blue-700">View all →</a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Recent activity -->
-            <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-800">Recent Activity</h2>
-                </div>
-                <div class="divide-y divide-gray-200">
-                    <div class="p-6 hover:bg-gray-50 transition duration-150">
-                        <div class="flex items-start">
-                            <div class="bg-blue-100 p-2 rounded-full mr-4">
-                                <i class="fas fa-user-plus text-blue-600"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-800">New patient registered</p>
-                                <p class="text-sm text-gray-500 mt-1">Rahul Sharma was added to the system</p>
-                                <p class="text-xs text-gray-400 mt-2">10 minutes ago</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-6 hover:bg-gray-50 transition duration-150">
-                        <div class="flex items-start">
-                            <div class="bg-green-100 p-2 rounded-full mr-4">
-                                <i class="fas fa-vial text-green-600"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-800">Sample collected</p>
-                                <p class="text-sm text-gray-500 mt-1">Blood sample collected from Priya Patel</p>
-                                <p class="text-xs text-gray-400 mt-2">1 hour ago</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-6 hover:bg-gray-50 transition duration-150">
-                        <div class="flex items-start">
-                            <div class="bg-purple-100 p-2 rounded-full mr-4">
-                                <i class="fas fa-file-pdf text-purple-600"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-800">Report generated</p>
-                                <p class="text-sm text-gray-500 mt-1">CBC report for Amit Kumar is ready</p>
-                                <p class="text-xs text-gray-400 mt-2">3 hours ago</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 text-center">
-                    <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-700">View all activity →</a>
-                </div>
-            </div>
-            
-            <!-- Quick actions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <a href="patients.html" class="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition duration-150">
-                    <div class="bg-blue-100 p-3 rounded-full inline-block">
-                        <i class="fas fa-user-plus text-blue-600 text-xl"></i>
-                    </div>
-                    <h3 class="mt-3 font-medium text-gray-800">Add Patient</h3>
-                </a>
-                <a href="appointments.html" class="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition duration-150">
-                    <div class="bg-green-100 p-3 rounded-full inline-block">
-                        <i class="fas fa-calendar-plus text-green-600 text-xl"></i>
-                    </div>
-                    <h3 class="mt-3 font-medium text-gray-800">Schedule Visit</h3>
-                </a>
-                <a href="payments.html" class="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition duration-150">
-                    <div class="bg-yellow-100 p-3 rounded-full inline-block">
-                        <i class="fas fa-money-bill-wave text-yellow-600 text-xl"></i>
-                    </div>
-                    <h3 class="mt-3 font-medium text-gray-800">Record Payment</h3>
-                </a>
-                <a href="reports.html" class="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition duration-150">
-                    <div class="bg-purple-100 p-3 rounded-full inline-block">
-                        <i class="fas fa-file-upload text-purple-600 text-xl"></i>
-                    </div>
-                    <h3 class="mt-3 font-medium text-gray-800">Upload Report</h3>
-                </a>
-            </div>
-        </main>
-    </div>
 
-    <!-- Toast notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden transform translate-y-2 opacity-0 transition-all duration-300 z-50">
-        <div class="flex items-center">
-            <i class="fas fa-check-circle mr-2"></i>
-            <span id="toastMessage">Action completed successfully</span>
+        <!-- Nav -->
+        <nav class="space-y-1 text-sm">
+          <!-- Example of role-gated items: add data-roles="admin" etc. -->
+          <a href="login.html"
+             class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+             data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🔐</span>
+            <span>Login Info</span>
+          </a>
+          <a href="home.html"
+             class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+             data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏠</span>
+            <span>Dashboard</span>
+          </a>
+          <!-- Current Section: Add Entry (links to this page for now) -->
+          <a href="dashboard.html"
+             class="group flex items-center gap-3 rounded-lg px-3 py-2 ring-2 ring-brand-300 bg-white shadow-sm"
+             data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-brand-100">➕</span>
+            <span class="font-semibold text-brand-800">Add Entry</span>
+            <span class="ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
+          </a>
+          <a href="schedule.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🗓️</span>
+            <span>Schedule</span>
+          </a>
+          <a href="payment.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">💳</span>
+            <span>Payment</span>
+          </a>
+          <a href="reports.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📄</span>
+            <span>Reports</span>
+          </a>
+          <a href="inventory.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📦</span>
+            <span>Inventory</span>
+          </a>
+          <a href="medical-camp.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">⛺</span>
+            <span>Medical Camp</span>
+          </a>
+          <a href="database.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🗄️</span>
+            <span>Database</span>
+          </a>
+          <a href="test-prices.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏷️</span>
+            <span>Test Prices</span>
+          </a>
+          <a href="staff.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">👥</span>
+            <span>Staff</span>
+          </a>
+          <a href="analytics.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📊</span>
+            <span>Analytics</span>
+          </a>
+          <a href="ai-assistant.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🤖</span>
+            <span>AI Assistant</span>
+          </a>
+          <a href="about.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">ℹ️</span>
+            <span>About Us</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Content -->
+      <main class="flex-1">
+        <!-- Breadcrumb / title card -->
+        <div class="glass rounded-2xl ring-1 ring-white/40 shadow-smooth p-5 mb-6">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div class="flex-1">
+              <h2 class="text-lg sm:text-xl font-semibold">Add Entry</h2>
+              <p class="text-sm text-slate-600">Create a new patient record or booking. The form below is embedded from your Tally link.</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="rounded-full bg-brand-100 text-brand-800 px-2.5 py-1 ring-1 ring-brand-200">Secure</span>
+              <span class="rounded-full bg-emerald-100 text-emerald-700 px-2.5 py-1 ring-1 ring-emerald-200">Live</span>
+            </div>
+          </div>
         </div>
+
+        <!-- Card that holds the embedded Tally form -->
+        <section class="rounded-2xl ring-1 ring-white/40 shadow-smooth bg-card-grad p-4 sm:p-6">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <h3 class="font-semibold">Patient Intake Form</h3>
+              <p class="text-xs text-slate-600">Form source: <span class="font-mono">https://tally.so/r/mRNJrJ</span></p>
+            </div>
+            <a href="https://tally.so/r/mRNJrJ" target="_blank" class="text-xs rounded-lg px-3 py-2 ring-1 ring-brand-300 bg-white hover:bg-brand-50 transition-basic">Open in new tab</a>
+          </div>
+
+          <!-- Responsive iFrame embed -->
+          <div class="rounded-xl overflow-hidden ring-1 ring-slate-200 bg-white">
+            <iframe
+              src="https://tally.so/r/mRNJrJ?transparentBackground=1&hideTitle=1"
+              width="100%"
+              class="block w-full fill-iframe"
+              frameborder="0"
+              marginheight="0"
+              marginwidth="0"
+              title="Add Entry — Tally Form">
+            </iframe>
+          </div>
+
+          <p class="mt-3 text-[11px] text-slate-500">Tip: You can continue customizing this section with internal fields later if you replace the embed with native inputs.</p>
+        </section>
+      </main>
     </div>
+  </div>
 
-    <script>
-        // Simple authentication check (replace with your actual auth logic)
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is authenticated (this is a simple example)
-            const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-            
-            if (!isAuthenticated) {
-                // Redirect to login if not authenticated
-                window.location.href = 'login.html';
-                return;
-            }
+  <!-- Mobile overlay to close sidebar when open -->
+  <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden opacity-0 pointer-events-none transition-opacity"></div>
 
-            // Initialize the dashboard
-            initDashboard();
-        });
+  <!-- Firebase v10 (Modular, CDN) + Auth Guard + Role-based visibility -->
+  <script type="module">
+    // --- Firebase SDKs (v10) ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        function initDashboard() {
-            // Sidebar toggle functionality
-            const sidebar = document.getElementById('sidebar');
-            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-            const sidebarToggle = document.getElementById('sidebarToggle');
+    // --- Config (provided) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXQyQRw4JRaWDNbca4YQkanMWnfu8SuH0",
+      authDomain: "pathologylab-9d156.firebaseapp.com",
+      projectId: "pathologylab-9d156",
+      storageBucket: "pathologylab-9d156.appspot.com",
+      messagingSenderId: "874537581352",
+      appId: "1:874537581352:web:9dbcbe269d561c8d676e1d",
+      measurementId: "G-S279W29G9Q"
+    };
 
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('-translate-x-full');
-                sidebarBackdrop.classList.toggle('hidden');
-            });
+    // --- Init ---
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let db = null;
+    try {
+      db = getFirestore(app);
+    } catch (e) {
+      console.warn("Firestore init skipped/failed:", e);
+    }
 
-            sidebarBackdrop.addEventListener('click', function() {
-                sidebar.classList.add('-translate-x-full');
-                sidebarBackdrop.classList.add('hidden');
-            });
+    const userNameEl  = document.getElementById('userName');
+    const userEmailEl = document.getElementById('userEmail');
+    const userAvatar  = document.getElementById('userAvatar');
+    const signOutBtn  = document.getElementById('signOutBtn');
 
-            // Logout functionality
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    // Clear authentication
-                    localStorage.removeItem('isAuthenticated');
-                    // Redirect to login
-                    window.location.href = 'login.html';
-                });
-            }
+    function initialsFromName(name, email) {
+      const source = (name || email || 'U').trim();
+      const parts = source.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return source.slice(0,2).toUpperCase();
+    }
 
-            // Branch select change handler
-            const branchSelect = document.getElementById('branchSelect');
-            if (branchSelect) {
-                branchSelect.addEventListener('change', function() {
-                    showToast('Branch changed successfully');
-                    // Here you would typically reload data for the selected branch
-                });
-            }
-
-            // Notifications button
-            const notificationsBtn = document.getElementById('notificationsBtn');
-            if (notificationsBtn) {
-                notificationsBtn.addEventListener('click', function() {
-                    showToast('Notifications feature coming soon!');
-                });
-            }
-
-            // Hide loading overlay
-            setTimeout(() => {
-                document.getElementById('loadingOverlay').classList.add('hidden');
-            }, 800);
-
-            // Simulate loading data (replace with actual API calls)
-            setTimeout(() => {
-                // Update stats with "real" data
-                document.getElementById('todayAppointments').textContent = '15';
-                document.getElementById('pendingReports').textContent = '5';
-                document.getElementById('duePayments').textContent = '₹7,890';
-            }, 1000);
+    function applyRoleVisibility(roleOrRoles) {
+      const roleSet = new Set();
+      if (Array.isArray(roleOrRoles)) {
+        roleOrRoles.forEach(r => roleSet.add(String(r).toLowerCase()));
+      } else if (roleOrRoles) {
+        String(roleOrRoles).split(',').map(s=>s.trim().toLowerCase()).forEach(r => roleSet.add(r));
+      }
+      // Hide elements whose data-roles doesn't include a role the user has
+      document.querySelectorAll('[data-roles]').forEach(el => {
+        const allowed = String(el.getAttribute('data-roles') || '')
+                          .split(',')
+                          .map(s => s.trim().toLowerCase())
+                          .filter(Boolean);
+        if (allowed.length && roleSet.size) {
+          const match = allowed.some(r => roleSet.has(r));
+          if (!match) {
+            el.classList.add('hidden');
+          }
         }
+      });
+    }
 
-        // Toast notification function
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            
-            toastMessage.textContent = message;
-            toast.classList.remove('hidden', 'opacity-0', 'translate-y-2');
-            
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 3000);
+    async function fetchUserRole(uid) {
+      if (!db) return null;
+      try {
+        const snap = await getDoc(doc(db, 'users', uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          // Accept role as string or array: role / roles
+          return data?.roles ?? data?.role ?? null;
         }
-    </script>
+      } catch (err) {
+        console.warn('Role fetch failed:', err);
+      }
+      return null;
+    }
+
+    // --- Auth Guard ---
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // No session: redirect to login
+        window.location.replace('login.html');
+        return;
+      }
+
+      // Show name/email
+      const name = user.displayName || '';
+      const email = user.email || '';
+      userNameEl.textContent  = name || '(No display name)';
+      userEmailEl.textContent = email || '(No email)';
+      userAvatar.textContent  = initialsFromName(name, email);
+
+      // Optional: role-based visibility
+      const roleOrRoles = await fetchUserRole(user.uid);
+      if (roleOrRoles) {
+        applyRoleVisibility(roleOrRoles);
+      }
+    });
+
+    // --- Sign Out ---
+    signOutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        // onAuthStateChanged will handle redirect
+      } catch (e) {
+        alert('Failed to sign out. Please try again.');
+        console.error(e);
+      }
+    });
+
+    // --- Sidebar toggle (mobile) ---
+    const sidebar = document.getElementById('sidebar');
+    const toggle  = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('overlay');
+
+    function openSidebar() {
+      sidebar.style.transform = 'translateX(0)';
+      overlay.style.opacity = '1';
+      overlay.style.pointerEvents = 'auto';
+    }
+    function closeSidebar() {
+      sidebar.style.transform = '';
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+    }
+    toggle?.addEventListener('click', () => {
+      const isOpen = sidebar.style.transform === 'translateX(0px)' || sidebar.style.transform === 'translateX(0)';
+      isOpen ? closeSidebar() : openSidebar();
+    });
+    overlay?.addEventListener('click', closeSidebar);
+
+    // Optional: close on wide screens automatically
+    const mq = window.matchMedia('(min-width: 1024px)');
+    function handleMQ(e){ if (e.matches) closeSidebar(); }
+    mq.addEventListener ? mq.addEventListener('change', handleMQ) : mq.addListener(handleMQ);
+  </script>
 </body>
 </html>
