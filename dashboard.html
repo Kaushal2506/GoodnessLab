@@ -19,9 +19,7 @@
               500:'#2aa7ff',600:'#1b83db',700:'#1767ad',800:'#174f83',900:'#163f66',
             },
           },
-          boxShadow: {
-            'smooth': '0 10px 30px rgba(2, 8, 23, .08)',
-          },
+          boxShadow: { 'smooth': '0 10px 30px rgba(2, 8, 23, .08)' },
           backgroundImage: {
             'brand-grad': 'linear-gradient(135deg, #2aa7ff 0%, #8D6BFF 50%, #FF7AD9 100%)',
             'card-grad': 'linear-gradient(180deg, rgba(255,255,255,.80), rgba(255,255,255,.65))',
@@ -32,20 +30,27 @@
   </script>
 
   <style>
-    /* Subtle frosted cards */
+    /* Frosted look */
     .glass {
       backdrop-filter: saturate(1.2) blur(8px);
       -webkit-backdrop-filter: saturate(1.2) blur(8px);
       background: rgba(255,255,255,0.75);
     }
-    /* Smooth hover lift for cards / links */
     .lift:hover { transform: translateY(-2px); }
     .transition-basic { transition: all .2s ease; }
 
-    /* Responsive iframe wrapper (fills remaining height) */
-    .fill-iframe { height: calc(100vh - 220px); } /* adjusts for topbar + breadcrumb area */
-    @media (min-width: 1024px) {
-      .fill-iframe { height: calc(100vh - 180px); }
+    /* Fill remaining vertical space for iframe */
+    .fill-iframe { height: calc(100vh - 180px); } /* adjusts for topbar + title card */
+    @media (max-width: 1024px) {
+      .fill-iframe { height: calc(100vh - 220px); }
+    }
+
+    /* Active nav style helper (applied/removed via JS) */
+    .nav-active {
+      background-color: white;
+      box-shadow: 0 1px 2px rgba(2,8,23,.06), 0 1px 1px rgba(2,8,23,.04);
+      outline: 2px solid rgb(143 214 255); /* ~brand-300 */
+      outline-offset: 0;
     }
   </style>
 </head>
@@ -58,9 +63,8 @@
   <header class="sticky top-0 z-40 bg-white/80 glass shadow-smooth">
     <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-3 py-3">
-        <!-- Logo: square with rounded corners -->
+        <!-- Logo (square, rounded corners) -->
         <div class="h-10 w-10 rounded-lg overflow-hidden ring-1 ring-slate-200 flex items-center justify-center">
-          <!-- Replace src with your real logo if available -->
           <img alt="Goodness Healthcare Logo" class="h-full w-full object-cover"
                src="data:image/svg+xml;utf8,
                <svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>
@@ -121,95 +125,120 @@
           </button>
         </div>
 
-        <!-- Nav (font size bumped to text-base) -->
-        <nav class="space-y-1 text-base">
-          <!-- Example of role-gated items: add data-roles="admin" etc. -->
-          <a href="login.html"
-             class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+        <!-- Nav (text-base + 28px icon boxes) -->
+        <nav id="sidebarNav" class="space-y-1 text-base">
+          <!-- Each item has data-page to load into iframe -->
+          <a href="#" data-page="login-info.html"
+             class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
              data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🔐</span>
             <span>Login Info</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="home.html"
-             class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+
+          <a href="#" data-page="home.html"
+             class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
              data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏠</span>
             <span>Dashboard</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <!-- Current Section: Add Entry (links to this page for now) -->
-          <a href="dashboard.html"
-             class="group flex items-center gap-3 rounded-lg px-3 py-2 ring-2 ring-brand-300 bg-white shadow-sm"
+
+          <a href="#" data-page="entry.html"
+             class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
              data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-brand-100">➕</span>
-            <span class="font-semibold text-brand-800">Add Entry</span>
-            <span class="ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
+            <span>Add Entry</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="schedule.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+
+          <a href="#" data-page="schedule.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🗓️</span>
             <span>Schedule</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="payment.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+
+          <a href="#" data-page="payment.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">💳</span>
             <span>Payment</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="reports.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+
+          <a href="#" data-page="reports.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📄</span>
             <span>Reports</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="inventory.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+
+          <a href="#" data-page="inventory.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📦</span>
             <span>Inventory</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="medical-camp.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+
+          <a href="#" data-page="medical-camp.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">⛺</span>
             <span>Medical Camp</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="database.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+
+          <a href="#" data-page="database.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🗄️</span>
             <span>Database</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="test-prices.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+
+          <a href="#" data-page="test-prices.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏷️</span>
             <span>Test Prices</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="staff.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+
+          <a href="#" data-page="staff.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">👥</span>
             <span>Staff</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="analytics.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+
+          <a href="#" data-page="analytics.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📊</span>
             <span>Analytics</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="ai-assistant.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+
+          <a href="#" data-page="ai-assistant.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🤖</span>
             <span>AI Assistant</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
-          <a href="about.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+
+          <a href="#" data-page="about.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">ℹ️</span>
             <span>About Us</span>
+            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
         </nav>
       </aside>
 
       <!-- Content -->
       <main class="flex-1">
-        <!-- Breadcrumb / title card -->
-
-        <!-- Card that holds the embedded internal Add Entry page -->
-        <section class="rounded-2xl ring-1 ring-white/40 shadow-smooth bg-card-grad p-4 sm:p-6">
-
-          <!-- Responsive iFrame embed (replaced with add-entry.html) -->
-          <div class="rounded-xl overflow-hidden ring-1 ring-slate-200 bg-white">
-            <iframe
-              src="entry.html"
-              width="100%"
-              class="block w-full fill-iframe"
-              frameborder="0"
-              marginheight="0"
-              marginwidth="0"
-              title="Add Entry — Internal Page">
-            </iframe>
+        <!-- Title card -->
+        <div class="glass rounded-2xl ring-1 ring-white/40 shadow-smooth p-5 mb-6">
+      
+      
           </div>
+        </div>
+
+        <!-- Full-width, edge-to-edge content box (NO inner padding) -->
+        <section class="rounded-2xl ring-1 ring-white/40 shadow-smooth bg-card-grad p-0 overflow-hidden">
+          <iframe id="contentFrame"
+                  src="entry.html"  <!-- default -->
+                  class="block w-full fill-iframe"
+                  frameborder="0"
+                  marginheight="0"
+                  marginwidth="0"
+                  title="Section Content">
+          </iframe>
         </section>
       </main>
     </div>
@@ -218,7 +247,7 @@
   <!-- Mobile overlay to close sidebar when open -->
   <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden opacity-0 pointer-events-none transition-opacity"></div>
 
-  <!-- Firebase v10 (Modular, CDN) + Auth Guard + Role-based visibility -->
+  <!-- Firebase v10 (Modular, CDN) + Auth Guard + Role-based visibility + In-page router -->
   <script type="module">
     // --- Firebase SDKs (v10) ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -240,16 +269,16 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     let db = null;
-    try {
-      db = getFirestore(app);
-    } catch (e) {
-      console.warn("Firestore init skipped/failed:", e);
-    }
+    try { db = getFirestore(app); } catch (e) { console.warn("Firestore init skipped/failed:", e); }
 
     const userNameEl  = document.getElementById('userName');
     const userEmailEl = document.getElementById('userEmail');
     const userAvatar  = document.getElementById('userAvatar');
     const signOutBtn  = document.getElementById('signOutBtn');
+
+    const contentFrame = document.getElementById('contentFrame');
+    const contentTitle = document.getElementById('contentTitle');
+    const sidebarNav   = document.getElementById('sidebarNav');
 
     function initialsFromName(name, email) {
       const source = (name || email || 'U').trim();
@@ -260,12 +289,9 @@
 
     function applyRoleVisibility(roleOrRoles) {
       const roleSet = new Set();
-      if (Array.isArray(roleOrRoles)) {
-        roleOrRoles.forEach(r => roleSet.add(String(r).toLowerCase()));
-      } else if (roleOrRoles) {
-        String(roleOrRoles).split(',').map(s=>s.trim().toLowerCase()).forEach(r => roleSet.add(r));
-      }
-      // Hide elements whose data-roles doesn't include a role the user has
+      if (Array.isArray(roleOrRoles)) roleOrRoles.forEach(r => roleSet.add(String(r).toLowerCase()));
+      else if (roleOrRoles) String(roleOrRoles).split(',').map(s=>s.trim().toLowerCase()).forEach(r => roleSet.add(r));
+
       document.querySelectorAll('[data-roles]').forEach(el => {
         const allowed = String(el.getAttribute('data-roles') || '')
                           .split(',')
@@ -273,9 +299,7 @@
                           .filter(Boolean);
         if (allowed.length && roleSet.size) {
           const match = allowed.some(r => roleSet.has(r));
-          if (!match) {
-            el.classList.add('hidden');
-          }
+          if (!match) el.classList.add('hidden');
         }
       });
     }
@@ -286,7 +310,6 @@
         const snap = await getDoc(doc(db, 'users', uid));
         if (snap.exists()) {
           const data = snap.data();
-          // Accept role as string or array: role / roles
           return data?.roles ?? data?.role ?? null;
         }
       } catch (err) {
@@ -298,34 +321,22 @@
     // --- Auth Guard ---
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        // No session: redirect to login
-        window.location.replace('login.html');
+        window.location.replace('login.html'); // redirect when not signed in
         return;
       }
-
-      // Show name/email
       const name = user.displayName || '';
       const email = user.email || '';
       userNameEl.textContent  = name || '(No display name)';
       userEmailEl.textContent = email || '(No email)';
       userAvatar.textContent  = initialsFromName(name, email);
 
-      // Optional: role-based visibility
       const roleOrRoles = await fetchUserRole(user.uid);
-      if (roleOrRoles) {
-        applyRoleVisibility(roleOrRoles);
-      }
+      if (roleOrRoles) applyRoleVisibility(roleOrRoles);
     });
 
     // --- Sign Out ---
     signOutBtn.addEventListener('click', async () => {
-      try {
-        await signOut(auth);
-        // onAuthStateChanged will handle redirect
-      } catch (e) {
-        alert('Failed to sign out. Please try again.');
-        console.error(e);
-      }
+      try { await signOut(auth); } catch (e) { alert('Failed to sign out. Please try again.'); console.error(e); }
     });
 
     // --- Sidebar toggle (mobile) ---
@@ -348,11 +359,52 @@
       isOpen ? closeSidebar() : openSidebar();
     });
     overlay?.addEventListener('click', closeSidebar);
-
-    // Optional: close on wide screens automatically
     const mq = window.matchMedia('(min-width: 1024px)');
     function handleMQ(e){ if (e.matches) closeSidebar(); }
     mq.addEventListener ? mq.addEventListener('change', handleMQ) : mq.addListener(handleMQ);
+
+    // --- Simple in-page router: load pages into iframe + highlight active ---
+    function setActive(linkEl) {
+      document.querySelectorAll('.nav-item').forEach(a => {
+        a.classList.remove('nav-active');
+        a.querySelector('.badge')?.classList.add('hidden');
+        a.querySelector('span:nth-child(2)')?.classList.remove('font-semibold','text-brand-800');
+      });
+      linkEl.classList.add('nav-active');
+      linkEl.querySelector('.badge')?.classList.remove('hidden');
+      linkEl.querySelector('span:nth-child(2)')?.classList.add('font-semibold','text-brand-800');
+    }
+
+    function loadPage(file, linkEl) {
+      if (!file) return;
+      contentFrame.src = file;
+      // Title from link text
+      const label = linkEl?.querySelector('span:nth-child(2)')?.textContent?.trim() || 'Section';
+      contentTitle.textContent = label;
+      if (linkEl) setActive(linkEl);
+
+      // Update hash for deep-linking (optional)
+      try { history.replaceState(null, '', `#${encodeURIComponent(file)}`); } catch {}
+      closeSidebar(); // auto close on mobile after selecting
+    }
+
+    // Click handler for all nav items
+    sidebarNav.addEventListener('click', (e) => {
+      const a = e.target.closest('.nav-item');
+      if (!a) return;
+      e.preventDefault();
+      const file = a.getAttribute('data-page');
+      loadPage(file, a);
+    });
+
+    // Support deep-link via URL hash (#entry.html, #reports.html, etc.)
+    (function initFromHashOrDefault(){
+      const hash = decodeURIComponent(location.hash || '').replace(/^#/, '').trim();
+      const startFile = hash || 'entry.html'; // default to Add Entry (entry.html)
+      const startLink = [...document.querySelectorAll('.nav-item')].find(a => a.getAttribute('data-page') === startFile)
+                        || document.querySelector('.nav-item[data-page="entry.html"]');
+      loadPage(startFile, startLink);
+    })();
   </script>
 </body>
 </html>
