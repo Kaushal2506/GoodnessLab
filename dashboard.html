@@ -8,6 +8,7 @@
   <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Tailwind theme tweaks
     tailwind.config = {
       theme: {
         extend: {
@@ -18,7 +19,9 @@
               500:'#2aa7ff',600:'#1b83db',700:'#1767ad',800:'#174f83',900:'#163f66',
             },
           },
-          boxShadow: { 'smooth': '0 10px 30px rgba(2, 8, 23, .08)' },
+          boxShadow: {
+            'smooth': '0 10px 30px rgba(2, 8, 23, .08)',
+          },
           backgroundImage: {
             'brand-grad': 'linear-gradient(135deg, #2aa7ff 0%, #8D6BFF 50%, #FF7AD9 100%)',
             'card-grad': 'linear-gradient(180deg, rgba(255,255,255,.80), rgba(255,255,255,.65))',
@@ -27,48 +30,54 @@
       }
     }
   </script>
+
   <style>
-    .glass { backdrop-filter: saturate(1.2) blur(8px); -webkit-backdrop-filter: saturate(1.2) blur(8px); background: rgba(255,255,255,0.78); }
+    /* Subtle frosted cards */
+    .glass {
+      backdrop-filter: saturate(1.2) blur(8px);
+      -webkit-backdrop-filter: saturate(1.2) blur(8px);
+      background: rgba(255,255,255,0.75);
+    }
+    /* Smooth hover lift for cards / links */
     .lift:hover { transform: translateY(-2px); }
     .transition-basic { transition: all .2s ease; }
-    .fill-iframe { height: calc(100vh - 220px); }
-    @media (min-width:1024px){ .fill-iframe{ height: calc(100vh - 180px);} }
 
-    /* --- Sidebar fixes for mobile overflow & full-height background --- */
-    :root { --topbar-safe: 72px; } /* approximate topbar height */
-    #sidebar.mobile-fixed {
-      position: fixed;
-      top: calc(var(--topbar-safe) + 8px);
-      bottom: 16px;
-      left: 16px;
-      width: 18rem;            /* w-72 */
-      overflow-y: auto;        /* vertical scroll when needed */
-      -webkit-overflow-scrolling: touch;
-    }
-    @media (min-width:1024px){
-      #sidebar { position: static; height: auto; max-height: calc(100vh - 0px); overflow-y: auto; }
+    /* Responsive iframe wrapper (fills remaining height) */
+    .fill-iframe { height: calc(100vh - 220px); } /* adjusts for topbar + breadcrumb area */
+    @media (min-width: 1024px) {
+      .fill-iframe { height: calc(100vh - 180px); }
     }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-sky-50 via-indigo-50 to-rose-50 text-slate-800">
 
+  <!-- Decorative gradient ribbon -->
   <div class="h-1.5 w-full bg-brand-grad"></div>
 
   <!-- Topbar -->
   <header class="sticky top-0 z-40 bg-white/80 glass shadow-smooth">
     <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-3 py-3">
-        <!-- Logo -->
+        <!-- Logo: square with rounded corners -->
         <div class="h-10 w-10 rounded-lg overflow-hidden ring-1 ring-slate-200 flex items-center justify-center">
+          <!-- Replace src with your real logo if available -->
           <img alt="Goodness Healthcare Logo" class="h-full w-full object-cover"
                src="data:image/svg+xml;utf8,
                <svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>
-                 <defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
-                   <stop offset='0%' stop-color='%232aa7ff'/><stop offset='50%' stop-color='%238D6BFF'/><stop offset='100%' stop-color='%23FF7AD9'/>
-                 </linearGradient></defs>
+                 <defs>
+                   <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+                     <stop offset='0%' stop-color='%232aa7ff'/>
+                     <stop offset='50%' stop-color='%238D6BFF'/>
+                     <stop offset='100%' stop-color='%23FF7AD9'/>
+                   </linearGradient>
+                 </defs>
                  <rect width='160' height='160' rx='18' fill='url(%23g)'/>
-                 <g fill='%23ffffff'><circle cx='55' cy='80' r='26'/><rect x='88' y='54' width='20' height='52' rx='10'/><rect x='68' y='70' width='60' height='20' rx='10'/></g>
-               </svg>" />
+                 <g fill='%23ffffff'>
+                   <circle cx='55' cy='80' r='26'/>
+                   <rect x='88' y='54' width='20' height='52' rx='10'/>
+                   <rect x='68' y='70' width='60' height='20' rx='10'/>
+                 </g>
+               </svg>"/>
         </div>
         <div class="flex-1">
           <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">Goodness Healthcare</h1>
@@ -79,7 +88,8 @@
         <button id="sidebarToggle" class="lg:hidden px-3 py-2 rounded-lg bg-white ring-1 ring-slate-200 hover:ring-brand-300 transition-basic"
                 aria-label="Toggle menu">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
       </div>
@@ -92,9 +102,11 @@
       <!-- Sidebar -->
       <aside id="sidebar"
              class="glass w-72 shrink-0 rounded-2xl p-4 ring-1 ring-white/40 shadow-smooth transition-basic
-                    mobile-fixed lg:translate-x-0 lg:static">
-        <!-- Signed-in user -->
-        <div class="mb-4 rounded-xl bg-white/70 p-4 ring-1 ring-slate-200">
+                    fixed top-24 bottom-4 left-4 z-30 translate-x-[-120%] lg:translate-x-0
+                    lg:static lg:inset-auto lg:z-auto
+                    h-[calc(100vh-7rem)] lg:h-[calc(100vh-8rem)] overflow-y-auto">
+        <!-- Signed-in user summary + Sign Out -->
+        <div class="mb-4 rounded-xl bg-white/70 p-3 ring-1 ring-slate-200">
           <div class="flex items-center gap-3">
             <div class="h-10 w-10 rounded-full bg-brand-100 ring-1 ring-brand-300 flex items-center justify-center text-brand-700 font-semibold select-none" id="userAvatar">U</div>
             <div class="min-w-0">
@@ -103,23 +115,31 @@
             </div>
           </div>
           <button id="signOutBtn"
-                  class="mt-3 w-full rounded-lg bg-gradient-to-r from-brand-500 to-violet-500 py-2 text-white text-sm font-medium shadow-sm hover:shadow active:scale-[.99] transition-basic">
+                  class="mt-3 w-full rounded-lg bg-gradient-to-r from-brand-500 to-violet-500 py-2 text-white text-sm font-medium shadow-sm hover:shadow
+                         active:scale-[.99] transition-basic">
             Sign Out
           </button>
         </div>
 
-        <!-- Nav (text size increased) -->
-        <nav class="space-y-1 text-base"> <!-- text-base for bigger font -->
-          <a href="login.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white" data-roles="admin,staff">
+        <!-- Nav (font size bumped to text-base) -->
+        <nav class="space-y-1 text-base">
+          <!-- Example of role-gated items: add data-roles="admin" etc. -->
+          <a href="login.html"
+             class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🔐</span>
             <span>Login Info</span>
           </a>
-          <a href="home.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white" data-roles="admin,staff">
+          <a href="home.html"
+             class="group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏠</span>
             <span>Dashboard</span>
           </a>
-          <!-- Current section -->
-          <a href="dashboard.html" class="group flex items-center gap-3 rounded-lg px-3 py-2 ring-2 ring-brand-300 bg-white shadow-sm" data-roles="admin,staff">
+          <!-- Current Section: Add Entry (links to this page for now) -->
+          <a href="dashboard.html"
+             class="group flex items-center gap-3 rounded-lg px-3 py-2 ring-2 ring-brand-300 bg-white shadow-sm"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-brand-100">➕</span>
             <span class="font-semibold text-brand-800">Add Entry</span>
             <span class="ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
@@ -173,39 +193,21 @@
 
       <!-- Content -->
       <main class="flex-1">
-        <!-- Title card -->
-        <div class="glass rounded-2xl ring-1 ring-white/40 shadow-smooth p-5 mb-6">
-          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-            <div class="flex-1">
-              <h2 class="text-lg sm:text-xl font-semibold">Add Entry</h2>
-              <p class="text-sm text-slate-600">Create a new patient record or booking. Loading from <span class="font-mono">add-entry.html</span>.</p>
-            </div>
-            <div class="flex items-center gap-2 text-xs">
-              <span class="rounded-full bg-brand-100 text-brand-800 px-2.5 py-1 ring-1 ring-brand-200">Secure</span>
-              <span class="rounded-full bg-emerald-100 text-emerald-700 px-2.5 py-1 ring-1 ring-emerald-200">Live</span>
-            </div>
-          </div>
-        </div>
+        <!-- Breadcrumb / title card -->
 
-        <!-- Embedded add-entry.html instead of Tally -->
+        <!-- Card that holds the embedded internal Add Entry page -->
         <section class="rounded-2xl ring-1 ring-white/40 shadow-smooth bg-card-grad p-4 sm:p-6">
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <div>
-              <h3 class="font-semibold">Patient Intake</h3>
-              <p class="text-xs text-slate-600">Source file: <span class="font-mono">add-entry.html</span></p>
-            </div>
-            <a href="add-entry.html" target="_blank" class="text-xs rounded-lg px-3 py-2 ring-1 ring-brand-300 bg-white hover:bg-brand-50 transition-basic">Open in new tab</a>
-          </div>
 
+          <!-- Responsive iFrame embed (replaced with add-entry.html) -->
           <div class="rounded-xl overflow-hidden ring-1 ring-slate-200 bg-white">
             <iframe
-              src="add-entry.html"
+              src="entry.html"
               width="100%"
               class="block w-full fill-iframe"
               frameborder="0"
               marginheight="0"
               marginwidth="0"
-              title="Add Entry — Internal Form">
+              title="Add Entry — Internal Page">
             </iframe>
           </div>
         </section>
@@ -213,15 +215,17 @@
     </div>
   </div>
 
-  <!-- Mobile overlay -->
+  <!-- Mobile overlay to close sidebar when open -->
   <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden opacity-0 pointer-events-none transition-opacity"></div>
 
-  <!-- Firebase v10 (CDN) -->
+  <!-- Firebase v10 (Modular, CDN) + Auth Guard + Role-based visibility -->
   <script type="module">
+    // --- Firebase SDKs (v10) ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // --- Config (provided) ---
     const firebaseConfig = {
       apiKey: "AIzaSyCXQyQRw4JRaWDNbca4YQkanMWnfu8SuH0",
       authDomain: "pathologylab-9d156.firebaseapp.com",
@@ -232,10 +236,15 @@
       measurementId: "G-S279W29G9Q"
     };
 
+    // --- Init ---
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     let db = null;
-    try { db = getFirestore(app); } catch (e) { console.warn("Firestore init skipped/failed:", e); }
+    try {
+      db = getFirestore(app);
+    } catch (e) {
+      console.warn("Firestore init skipped/failed:", e);
+    }
 
     const userNameEl  = document.getElementById('userName');
     const userEmailEl = document.getElementById('userEmail');
@@ -251,14 +260,22 @@
 
     function applyRoleVisibility(roleOrRoles) {
       const roleSet = new Set();
-      if (Array.isArray(roleOrRoles)) roleOrRoles.forEach(r => roleSet.add(String(r).toLowerCase()));
-      else if (roleOrRoles) String(roleOrRoles).split(',').map(s=>s.trim().toLowerCase()).forEach(r => roleSet.add(r));
+      if (Array.isArray(roleOrRoles)) {
+        roleOrRoles.forEach(r => roleSet.add(String(r).toLowerCase()));
+      } else if (roleOrRoles) {
+        String(roleOrRoles).split(',').map(s=>s.trim().toLowerCase()).forEach(r => roleSet.add(r));
+      }
+      // Hide elements whose data-roles doesn't include a role the user has
       document.querySelectorAll('[data-roles]').forEach(el => {
         const allowed = String(el.getAttribute('data-roles') || '')
-          .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+                          .split(',')
+                          .map(s => s.trim().toLowerCase())
+                          .filter(Boolean);
         if (allowed.length && roleSet.size) {
           const match = allowed.some(r => roleSet.has(r));
-          if (!match) el.classList.add('hidden');
+          if (!match) {
+            el.classList.add('hidden');
+          }
         }
       });
     }
@@ -269,29 +286,49 @@
         const snap = await getDoc(doc(db, 'users', uid));
         if (snap.exists()) {
           const data = snap.data();
+          // Accept role as string or array: role / roles
           return data?.roles ?? data?.role ?? null;
         }
-      } catch (err) { console.warn('Role fetch failed:', err); }
+      } catch (err) {
+        console.warn('Role fetch failed:', err);
+      }
       return null;
     }
 
+    // --- Auth Guard ---
     onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.replace('login.html'); return; }
+      if (!user) {
+        // No session: redirect to login
+        window.location.replace('login.html');
+        return;
+      }
+
+      // Show name/email
       const name = user.displayName || '';
       const email = user.email || '';
       userNameEl.textContent  = name || '(No display name)';
       userEmailEl.textContent = email || '(No email)';
       userAvatar.textContent  = initialsFromName(name, email);
 
+      // Optional: role-based visibility
       const roleOrRoles = await fetchUserRole(user.uid);
-      if (roleOrRoles) applyRoleVisibility(roleOrRoles);
+      if (roleOrRoles) {
+        applyRoleVisibility(roleOrRoles);
+      }
     });
 
-    document.getElementById('signOutBtn').addEventListener('click', async () => {
-      try { await signOut(auth); } catch (e) { alert('Failed to sign out. Please try again.'); console.error(e); }
+    // --- Sign Out ---
+    signOutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        // onAuthStateChanged will handle redirect
+      } catch (e) {
+        alert('Failed to sign out. Please try again.');
+        console.error(e);
+      }
     });
 
-    // Sidebar toggle
+    // --- Sidebar toggle (mobile) ---
     const sidebar = document.getElementById('sidebar');
     const toggle  = document.getElementById('sidebarToggle');
     const overlay = document.getElementById('overlay');
@@ -312,6 +349,7 @@
     });
     overlay?.addEventListener('click', closeSidebar);
 
+    // Optional: close on wide screens automatically
     const mq = window.matchMedia('(min-width: 1024px)');
     function handleMQ(e){ if (e.matches) closeSidebar(); }
     mq.addEventListener ? mq.addEventListener('change', handleMQ) : mq.addListener(handleMQ);
