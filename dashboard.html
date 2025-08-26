@@ -19,7 +19,9 @@
               500:'#2aa7ff',600:'#1b83db',700:'#1767ad',800:'#174f83',900:'#163f66',
             },
           },
-          boxShadow: { 'smooth': '0 10px 30px rgba(2, 8, 23, .08)' },
+          boxShadow: {
+            'smooth': '0 10px 30px rgba(2, 8, 23, .08)',
+          },
           backgroundImage: {
             'brand-grad': 'linear-gradient(135deg, #2aa7ff 0%, #8D6BFF 50%, #FF7AD9 100%)',
             'card-grad': 'linear-gradient(180deg, rgba(255,255,255,.80), rgba(255,255,255,.65))',
@@ -30,28 +32,14 @@
   </script>
 
   <style>
-    /* Frosted look */
-    .glass {
-      backdrop-filter: saturate(1.2) blur(8px);
-      -webkit-backdrop-filter: saturate(1.2) blur(8px);
-      background: rgba(255,255,255,0.75);
-    }
+    .glass { backdrop-filter: saturate(1.2) blur(8px); -webkit-backdrop-filter: saturate(1.2) blur(8px); background: rgba(255,255,255,0.75); }
     .lift:hover { transform: translateY(-2px); }
     .transition-basic { transition: all .2s ease; }
+    /* Smooth fade for content swaps */
+    .fade { transition: opacity .25s ease; }
 
-    /* Fill remaining vertical space for iframe */
-    .fill-iframe { height: calc(100vh - 180px); } /* adjusts for topbar + title card */
-    @media (max-width: 1024px) {
-      .fill-iframe { height: calc(100vh - 220px); }
-    }
-
-    /* Active nav style helper (applied/removed via JS) */
-    .nav-active {
-      background-color: white;
-      box-shadow: 0 1px 2px rgba(2,8,23,.06), 0 1px 1px rgba(2,8,23,.04);
-      outline: 2px solid rgb(143 214 255); /* ~brand-300 */
-      outline-offset: 0;
-    }
+    /* We will compute the content height with JS to truly hit the bottom on all devices */
+    .content-frame { display:block; width:100%; border:0; }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-sky-50 via-indigo-50 to-rose-50 text-slate-800">
@@ -60,31 +48,17 @@
   <div class="h-1.5 w-full bg-brand-grad"></div>
 
   <!-- Topbar -->
-  <header class="sticky top-0 z-40 bg-white/80 glass shadow-smooth">
+  <header id="topbar" class="sticky top-0 z-40 bg-white/80 glass shadow-smooth">
     <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-3 py-3">
-        <!-- Logo (square, rounded corners) -->
+        <!-- Logo: square with rounded corners -->
         <div class="h-10 w-10 rounded-lg overflow-hidden ring-1 ring-slate-200 flex items-center justify-center">
-          <img alt="Goodness Healthcare Logo" class="h-full w-full object-cover"
-               src="data:image/svg+xml;utf8,
-               <svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>
-                 <defs>
-                   <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
-                     <stop offset='0%' stop-color='%232aa7ff'/>
-                     <stop offset='50%' stop-color='%238D6BFF'/>
-                     <stop offset='100%' stop-color='%23FF7AD9'/>
-                   </linearGradient>
-                 </defs>
-                 <rect width='160' height='160' rx='18' fill='url(%23g)'/>
-                 <g fill='%23ffffff'>
-                   <circle cx='55' cy='80' r='26'/>
-                   <rect x='88' y='54' width='20' height='52' rx='10'/>
-                   <rect x='68' y='70' width='60' height='20' rx='10'/>
-                 </g>
-               </svg>"/>
+          <!-- Customizable brand logo (set via JS); falls back to SVG if not set -->
+          <img id="brandLogo" alt="Goodness Healthcare Logo" class="h-full w-full object-cover" />
         </div>
-        <div class="flex-1">
-          <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">Goodness Healthcare</h1>
+
+        <div class="flex-1 min-w-0">
+          <h1 class="text-xl sm:text-2xl font-semibold tracking-tight truncate">Goodness Healthcare</h1>
           <p class="text-xs sm:text-sm text-slate-600">Internal Pathology Lab Management</p>
         </div>
 
@@ -101,7 +75,7 @@
   </header>
 
   <!-- Main layout -->
-  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-6">
+  <div id="pageWrap" class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-6">
     <div class="flex gap-6">
       <!-- Sidebar -->
       <aside id="sidebar"
@@ -125,119 +99,97 @@
           </button>
         </div>
 
-        <!-- Nav (text-base + 28px icon boxes) -->
-        <nav id="sidebarNav" class="space-y-1 text-base">
-          <!-- Each item has data-page to load into iframe -->
-          <a href="#" data-page="login-info.html"
-             class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+        <!-- Nav (font size bumped to text-base) -->
+        <nav id="sideNav" class="space-y-1 text-base">
+          <!-- Use data-target to load into content without full reload -->
+          <a href="login.html" data-target="login.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
              data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🔐</span>
             <span>Login Info</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="home.html"
-             class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+          <a href="home.html" data-target="home.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
              data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏠</span>
             <span>Dashboard</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="entry.html"
-             class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+          <!-- Add Entry (default active -> entry.html) -->
+          <a href="entry.html" data-target="entry.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2"
              data-roles="admin,staff">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-brand-100">➕</span>
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100">➕</span>
             <span>Add Entry</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="schedule.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="schedule.html" data-target="schedule.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🗓️</span>
             <span>Schedule</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="payment.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="payment.html" data-target="payment.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">💳</span>
             <span>Payment</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="reports.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="reports.html" data-target="reports.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📄</span>
             <span>Reports</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="inventory.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+          <a href="inventory.html" data-target="inventory.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📦</span>
             <span>Inventory</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="medical-camp.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="medical-camp.html" data-target="medical-camp.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">⛺</span>
             <span>Medical Camp</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="database.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+          <a href="database.html" data-target="database.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🗄️</span>
             <span>Database</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="test-prices.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="test-prices.html" data-target="test-prices.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏷️</span>
             <span>Test Prices</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="staff.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+          <a href="staff.html" data-target="staff.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">👥</span>
             <span>Staff</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="analytics.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="analytics.html" data-target="analytics.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📊</span>
             <span>Analytics</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="ai-assistant.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="ai-assistant.html" data-target="ai-assistant.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🤖</span>
             <span>AI Assistant</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
 
-          <a href="#" data-page="about.html" class="nav-item group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="about.html" data-target="about.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">ℹ️</span>
             <span>About Us</span>
-            <span class="badge hidden ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200">current</span>
           </a>
         </nav>
       </aside>
 
       <!-- Content -->
       <main class="flex-1">
-        <!-- Title card -->
-        <div class="glass rounded-2xl ring-1 ring-white/40 shadow-smooth p-5 mb-6">
-      
-      
-          </div>
-        </div>
-
-        <!-- Full-width, edge-to-edge content box (NO inner padding) -->
-        <section class="rounded-2xl ring-1 ring-white/40 shadow-smooth bg-card-grad p-0 overflow-hidden">
+        <!-- Content card (kept same size/shape) -->
+        <section id="contentCard" class="rounded-2xl ring-1 ring-white/40 shadow-smooth bg-card-grad p-0 overflow-hidden">
+          <!-- Iframe fills entire box; height computed to hit bottom of screen -->
           <iframe id="contentFrame"
-                  src="entry.html"  <!-- default -->
-                  class="block w-full fill-iframe"
-                  frameborder="0"
-                  marginheight="0"
-                  marginwidth="0"
-                  title="Section Content">
+            src="entry.html"
+            class="content-frame fade opacity-100"
+            title="Content Area">
           </iframe>
         </section>
       </main>
@@ -247,12 +199,18 @@
   <!-- Mobile overlay to close sidebar when open -->
   <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden opacity-0 pointer-events-none transition-opacity"></div>
 
-  <!-- Firebase v10 (Modular, CDN) + Auth Guard + Role-based visibility + In-page router -->
+  <!-- Firebase v10 (Modular, CDN) + Auth Guard + Role-based visibility -->
   <script type="module">
     // --- Firebase SDKs (v10) ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ========== CONFIGURABLE LOGO ==========
+    // Option A) Hardcode here:
+    const BRAND_LOGO_URL = "https://drive.google.com/file/d/1ZHdzfzeQzrS3BG7kbEbmprpCoh5N57ox/preview"; // e.g. "https://your.cdn.com/logo.png"
+    // Option B) Or set at runtime in console or code:
+    // localStorage.setItem('brandLogoUrl', 'https://your.cdn.com/logo.png');
 
     // --- Config (provided) ---
     const firebaseConfig = {
@@ -276,10 +234,46 @@
     const userAvatar  = document.getElementById('userAvatar');
     const signOutBtn  = document.getElementById('signOutBtn');
 
-    const contentFrame = document.getElementById('contentFrame');
-    const contentTitle = document.getElementById('contentTitle');
-    const sidebarNav   = document.getElementById('sidebarNav');
+    const sidebar = document.getElementById('sidebar');
+    const toggle  = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('overlay');
 
+    const contentCard  = document.getElementById('contentCard');
+    const contentFrame = document.getElementById('contentFrame');
+    const sideNav      = document.getElementById('sideNav');
+
+    // ======= Brand Logo Support with Fallback =======
+    const fallbackLogoDataUrl = "data:image/svg+xml;utf8," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>
+        <defs>
+          <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+            <stop offset='0%' stop-color='#2aa7ff'/>
+            <stop offset='50%' stop-color='#8D6BFF'/>
+            <stop offset='100%' stop-color='#FF7AD9'/>
+          </linearGradient>
+        </defs>
+        <rect width='160' height='160' rx='18' fill='url(#g)'/>
+        <g fill='#ffffff'>
+          <circle cx='55' cy='80' r='26'/>
+          <rect x='88' y='54' width='20' height='52' rx='10'/>
+          <rect x='68' y='70' width='60' height='20' rx='10'/>
+        </g>
+      </svg>
+    `);
+
+    function applyBrandLogo() {
+      const el = document.getElementById('brandLogo');
+      const url = (localStorage.getItem('brandLogoUrl') || BRAND_LOGO_URL || "").trim();
+      if (!url) {
+        el.src = fallbackLogoDataUrl;
+        return;
+      }
+      el.src = url;
+      el.onerror = () => { el.src = fallbackLogoDataUrl; }; // graceful fallback
+    }
+    applyBrandLogo();
+
+    // ======= Role-based visibility helpers =======
     function initialsFromName(name, email) {
       const source = (name || email || 'U').trim();
       const parts = source.split(/\s+/).filter(Boolean);
@@ -291,12 +285,9 @@
       const roleSet = new Set();
       if (Array.isArray(roleOrRoles)) roleOrRoles.forEach(r => roleSet.add(String(r).toLowerCase()));
       else if (roleOrRoles) String(roleOrRoles).split(',').map(s=>s.trim().toLowerCase()).forEach(r => roleSet.add(r));
-
       document.querySelectorAll('[data-roles]').forEach(el => {
         const allowed = String(el.getAttribute('data-roles') || '')
-                          .split(',')
-                          .map(s => s.trim().toLowerCase())
-                          .filter(Boolean);
+                          .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
         if (allowed.length && roleSet.size) {
           const match = allowed.some(r => roleSet.has(r));
           if (!match) el.classList.add('hidden');
@@ -321,7 +312,7 @@
     // --- Auth Guard ---
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        window.location.replace('login.html'); // redirect when not signed in
+        window.location.replace('login.html'); // redirect if no session
         return;
       }
       const name = user.displayName || '';
@@ -336,14 +327,12 @@
 
     // --- Sign Out ---
     signOutBtn.addEventListener('click', async () => {
-      try { await signOut(auth); } catch (e) { alert('Failed to sign out. Please try again.'); console.error(e); }
+      try { await signOut(auth); } catch (e) {
+        alert('Failed to sign out. Please try again.'); console.error(e);
+      }
     });
 
-    // --- Sidebar toggle (mobile) ---
-    const sidebar = document.getElementById('sidebar');
-    const toggle  = document.getElementById('sidebarToggle');
-    const overlay = document.getElementById('overlay');
-
+    // ======= Mobile Sidebar toggle =======
     function openSidebar() {
       sidebar.style.transform = 'translateX(0)';
       overlay.style.opacity = '1';
@@ -363,48 +352,98 @@
     function handleMQ(e){ if (e.matches) closeSidebar(); }
     mq.addEventListener ? mq.addEventListener('change', handleMQ) : mq.addListener(handleMQ);
 
-    // --- Simple in-page router: load pages into iframe + highlight active ---
-    function setActive(linkEl) {
-      document.querySelectorAll('.nav-item').forEach(a => {
-        a.classList.remove('nav-active');
-        a.querySelector('.badge')?.classList.add('hidden');
-        a.querySelector('span:nth-child(2)')?.classList.remove('font-semibold','text-brand-800');
+    // ======= ACTIVE TAB HIGHLIGHTING =======
+    function setActiveLink(targetPath) {
+      const links = sideNav.querySelectorAll('.nav-link');
+      links.forEach(a => {
+        a.classList.remove('ring-2','ring-brand-300','bg-white','shadow-sm');
+        a.classList.remove('text-brand-800');
+        const badge = a.querySelector('.current-badge');
+        if (badge) badge.remove();
       });
-      linkEl.classList.add('nav-active');
-      linkEl.querySelector('.badge')?.classList.remove('hidden');
-      linkEl.querySelector('span:nth-child(2)')?.classList.add('font-semibold','text-brand-800');
+      const active = [...links].find(a => (a.dataset.target || a.getAttribute('href')) === targetPath);
+      if (active) {
+        active.classList.add('ring-2','ring-brand-300','bg-white','shadow-sm','text-brand-800');
+        const span = document.createElement('span');
+        span.className = "current-badge ml-auto text-[10px] rounded bg-brand-100 px-1.5 py-0.5 text-brand-700 ring-1 ring-brand-200";
+        span.textContent = "current";
+        active.appendChild(span);
+      }
     }
 
-    function loadPage(file, linkEl) {
-      if (!file) return;
-      contentFrame.src = file;
-      // Title from link text
-      const label = linkEl?.querySelector('span:nth-child(2)')?.textContent?.trim() || 'Section';
-      contentTitle.textContent = label;
-      if (linkEl) setActive(linkEl);
+    // ======= LOAD INTO CONTENT (without full page reload) =======
+    // We keep an iframe to isolate each section's own CSS/JS.
+    // Change src with a smooth fade, push to history, and close sidebar on mobile.
+    function loadSection(targetPath, push = true) {
+      if (!targetPath) return;
+      if (contentFrame.getAttribute('src') === targetPath) return;
 
-      // Update hash for deep-linking (optional)
-      try { history.replaceState(null, '', `#${encodeURIComponent(file)}`); } catch {}
-      closeSidebar(); // auto close on mobile after selecting
+      setActiveLink(targetPath);
+      contentFrame.style.opacity = '0'; // fade out
+      // Once the iframe finishes loading, fade in
+      const onLoad = () => {
+        contentFrame.removeEventListener('load', onLoad);
+        // Recompute height in case new page has different internal sizing effects
+        requestAnimationFrame(() => {
+          computeContentHeight();
+          contentFrame.style.opacity = '1';
+        });
+      };
+      contentFrame.addEventListener('load', onLoad);
+      contentFrame.src = targetPath;
+
+      if (push) {
+        history.pushState({ targetPath }, "", "#" + encodeURIComponent(targetPath));
+      }
+      // Close sidebar on mobile after selection
+      closeSidebar();
     }
 
-    // Click handler for all nav items
-    sidebarNav.addEventListener('click', (e) => {
-      const a = e.target.closest('.nav-item');
+    // Intercept sidebar link clicks
+    sideNav.addEventListener('click', (e) => {
+      const a = e.target.closest('a.nav-link');
       if (!a) return;
+      const targetPath = a.dataset.target || a.getAttribute('href');
+      if (!targetPath) return;
       e.preventDefault();
-      const file = a.getAttribute('data-page');
-      loadPage(file, a);
+      loadSection(targetPath, true);
     });
 
-    // Support deep-link via URL hash (#entry.html, #reports.html, etc.)
-    (function initFromHashOrDefault(){
-      const hash = decodeURIComponent(location.hash || '').replace(/^#/, '').trim();
-      const startFile = hash || 'entry.html'; // default to Add Entry (entry.html)
-      const startLink = [...document.querySelectorAll('.nav-item')].find(a => a.getAttribute('data-page') === startFile)
-                        || document.querySelector('.nav-item[data-page="entry.html"]');
-      loadPage(startFile, startLink);
-    })();
+    // Handle back/forward
+    window.addEventListener('popstate', (e) => {
+      const targetPath = e.state?.targetPath || decodeURIComponent((location.hash || '').slice(1)) || 'entry.html';
+      loadSection(targetPath, false);
+    });
+
+    // Boot: load from hash or default to entry.html
+    const bootPath = decodeURIComponent((location.hash || '').slice(1)) || 'entry.html';
+    setActiveLink(bootPath);
+    if (contentFrame.getAttribute('src') !== bootPath) {
+      contentFrame.src = bootPath;
+    }
+
+    // ======= CONTENT HEIGHT: stretch to bottom of screen =======
+    function computeContentHeight() {
+      // Ensure the iframe height exactly fills from the top of the card to the bottom of the viewport
+      const rect = contentCard.getBoundingClientRect();
+      // small extra bottom gap to account for page bottom padding (≈ 16px)
+      const bottomPadding = 16;
+      const available = Math.max(200, window.innerHeight - rect.top - bottomPadding);
+      contentFrame.style.height = available + "px";
+    }
+
+    // Recompute on load, resize, orientation changes
+    window.addEventListener('load', computeContentHeight);
+    window.addEventListener('resize', computeContentHeight);
+    window.addEventListener('orientationchange', computeContentHeight);
+
+    // Also recompute after fonts load (layout might shift)
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => computeContentHeight()).catch(()=>{});
+    }
+
+    // Initial compute (in case load event is delayed)
+    computeContentHeight();
   </script>
 </body>
 </html>
