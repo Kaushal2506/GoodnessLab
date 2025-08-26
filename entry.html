@@ -14,14 +14,14 @@
     --slate-900:#0f172a; --slate-800:#1f2937; --slate-700:#334155; --slate-600:#475569;
     --slate-500:#64748b; --slate-300:#cbd5e1; --slate-200:#e2e8f0; --slate-100:#f1f5f9;
 
-    /* Brand gradient: from-sky-400 via-indigo-500 to-pink-400 */
+    /* Brand gradient */
     --brand-from:#38bdf8; /* sky-400 */
     --brand-via:#6366f1;  /* indigo-500 */
     --brand-to:#f472b6;   /* pink-400 */
     --brand-grad: linear-gradient(90deg, var(--brand-from), var(--brand-via), var(--brand-to));
-    --brand-ring: 0 0 0 3px rgba(99,102,241,.28); /* focus ring (indigo-500 ~300 ring) */
+    --brand-ring: 0 0 0 3px rgba(99,102,241,.28); /* focus ring */
 
-    /* Background gradient: bg-gradient-to-br from-sky-50 via-indigo-50 to-rose-50 */
+    /* Background gradient */
     --bg-grad: radial-gradient(1200px 600px at -10% -10%, rgba(125,211,252,.28) 0%, transparent 45%),
                radial-gradient(1000px 500px at 110% -10%, rgba(199,210,254,.28) 0%, transparent 45%),
                radial-gradient(800px 400px at 50% 120%, rgba(254,205,211,.3) 0%, transparent 50%),
@@ -33,8 +33,8 @@
     --shadow-sm: 0 6px 20px rgba(2,6,23,.06);
     --shadow-lg: 0 24px 60px rgba(2,6,23,.10);
 
-    /* Radii & spacing */
-    --radius-xl: 18px;      /* rounded-2xl-ish */
+    /* Radii */
+    --radius-xl: 18px;
     --radius-lg: 12px;
     --radius-md: 10px;
 
@@ -52,7 +52,7 @@
     font-size:16px;
   }
 
-  /* Container: max-w-[1400px] with generous padding p-4 sm:p-6 */
+  /* Container */
   .wrap{max-width:1400px;margin:32px auto;padding:16px}
   @media(min-width:640px){ .wrap{padding:24px} }
 
@@ -110,16 +110,17 @@
   label{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:var(--slate-700)}
   .req::after{content:" *";color:var(--error);font-weight:700}
   input[type="text"], input[type="tel"], input[type="number"], input[type="time"],
-  input[type="date"], select, .multiselect, .readonly {
+  input[type="date"], select, .multiselect, .readonly, textarea {
     width:100%;padding:12px 14px;border:1px solid var(--slate-200);border-radius:var(--radius-md);
     background:#fff;outline:none;transition:.2s box-shadow,.2s border-color;
     font-size:14px; color:var(--slate-800)
   }
-  input:focus, select:focus, .multiselect:focus-within{box-shadow:var(--brand-ring);border-color:#c7d2fe}
+  input:focus, select:focus, .multiselect:focus-within, textarea:focus{box-shadow:var(--brand-ring);border-color:#c7d2fe}
   .hint{font-size:12px;color:var(--slate-600);margin-top:6px}
   .readonly{background:#f8fafc}
+  textarea{min-height:84px;resize:vertical}
 
-  /* Bigger fonts only in New Entry tab (still balanced) */
+  /* Slightly balanced sizes in New Entry tab */
   #panel-newentry{font-size:16px}
   #panel-newentry label{font-size:14px}
   #panel-newentry input[type="text"],
@@ -130,7 +131,8 @@
   #panel-newentry select,
   #panel-newentry .multiselect,
   #panel-newentry .readonly,
-  #panel-newentry .ms-input{font-size:16px;padding:14px 16px}
+  #panel-newentry .ms-input,
+  #panel-newentry textarea{font-size:16px;padding:14px 16px}
   #panel-newentry .hint{font-size:12px}
   #panel-newentry .card-header h2{font-size:20px}
 
@@ -175,6 +177,7 @@
     width:18px;height:18px;border:3px solid rgba(255,255,255,.6);border-top-color:#fff;border-radius:50%;
     display:inline-block;vertical-align:middle;margin-right:8px;animation:spin .8s linear infinite
   }
+  .spinner.sm{ width:16px; height:16px; border-width:3px; margin-right:8px }
   @keyframes spin{to{transform:rotate(360deg)}}
 
   .toast{
@@ -212,6 +215,19 @@
   }
   .suggestions div{padding:10px 12px;cursor:pointer}
   .suggestions div:hover{background:#f3f4f6}
+
+  /* ===== Tube section ===== */
+  .tube-section{margin-top:8px;background:rgba(255,255,255,.8);border:1px solid var(--glass-border);
+    border-radius:16px;padding:14px}
+  .tube-title{font-weight:700;color:var(--slate-700);margin:0 0 10px 0;font-size:14px}
+  .tube-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .tube-card{
+    display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid var(--slate-200);
+    border-radius:14px;box-shadow:var(--shadow-sm);min-height:72px
+  }
+  .tube-card img{width:40px;height:80px;object-fit:contain}
+  .tube-name{font-weight:700;color:var(--slate-800)}
+  .tube-count{font-size:13px;color:var(--slate-600);margin-top:2px}
 </style>
 </head>
 <body>
@@ -298,6 +314,21 @@
               </div>
               <input type="hidden" name="tests" id="testsValue" required />
               <div class="hint">CBC, TSH, Fasting Sugar, PP, HbA1C, D-Dimer, Goodness A1, Goodness A2</div>
+            </div>
+
+            <!-- ===== Tube count section (responsive) ===== -->
+            <div class="span-all">
+              <div id="tubeSection" class="tube-section" hidden>
+                <p class="tube-title">Required Test Tubes</p>
+                <div id="tubeList" class="tube-grid"></div>
+                <p class="hint" style="margin-top:8px">Counts are per visit: each tube type is needed once, except <strong>PP</strong> adds <strong>one extra Gray</strong>.</p>
+              </div>
+            </div>
+
+            <!-- Note input -->
+            <div class="span-all">
+              <label>Note</label>
+              <textarea name="note" id="note" placeholder="Additional comments or special instructions…"></textarea>
             </div>
 
             <div>
@@ -456,8 +487,7 @@
   /* =========================
      Config
      ========================= */
-  // IMPORTANT: Set this to your Google Apps Script Web App URL
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8AYTsTSLDg60t57KWnsG9OhwOPsm3Dx-u9K3eHAeFDd3h1DXP2cZo5oXV3xwQNjdaww/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3w5FvYMKVmqDuWlgEbvlPK2M2CqoalJQNbnOLX_OhRiQCb0aUuAvrA8IAEtwK1ikGnQ/exec";
 
   /* =========================
      Prices / Tests
@@ -469,16 +499,15 @@
   };
 
   /* =========================
-     Helpers
+     Helpers & UI
      ========================= */
   const el = (q) => document.querySelector(q);
   const $ = (q,root=document)=> Array.from(root.querySelectorAll(q));
   const fmtINR = (n) => "₹" + (Number(n)||0).toLocaleString("en-IN");
   const toKey = s => (s||"").trim().toLowerCase();
+  function showToast(msg="Saved!"){ const t=el("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2200); }
 
-  /* =========================
-     Tabs
-     ========================= */
+  /* Tabs */
   const panels = { inprogress: el("#panel-inprogress"), newentry: el("#panel-newentry") };
   $(".tab-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
@@ -491,7 +520,88 @@
   });
 
   /* =========================
-     Multiselect (Tests)
+     Tube mapping & rendering
+     ========================= */
+  const TUBES = {
+    Purple: { name: "Purple Tube", color: "#7e22ce" },
+    Red:    { name: "Red Tube",    color: "#ef4444" },
+    Gray:   { name: "Gray Tube",   color: "#6b7280" },
+    Blue:   { name: "Blue Tube",   color: "#3b82f6" }
+  };
+
+  function tubeSvgDataURI(hex){
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="120" viewBox="0 0 60 120">
+        <defs>
+          <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="${hex}" />
+            <stop offset="1" stop-color="${hex}" stop-opacity="0.85"/>
+          </linearGradient>
+        </defs>
+        <!-- Cap -->
+        <rect x="10" y="4" rx="6" ry="6" width="40" height="24" fill="url(#g)"/>
+        <!-- Tube body -->
+        <rect x="16" y="24" rx="8" ry="8" width="28" height="88" fill="#e5e7eb" stroke="#cbd5e1" stroke-width="2"/>
+        <!-- Highlight -->
+        <rect x="20" y="30" width="6" height="76" rx="3" fill="#ffffff" opacity="0.6"/>
+      </svg>`;
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg.trim());
+  }
+
+  function computeTubeCounts(sel){
+    let needs = { Purple:false, Red:false, Gray:false, Blue:false };
+    let hasPP = false;
+    sel.forEach(t=>{
+      switch(t){
+        case "CBC": needs.Purple = true; break;
+        case "HbA1C": needs.Purple = true; break;
+        case "TSH": needs.Red = true; break;
+        case "D-Dimer": needs.Blue = true; break;
+        case "Fasting Sugar": needs.Gray = true; break;
+        case "PP": needs.Gray = true; hasPP = true; break;
+        case "Goodness A1":
+        case "Goodness A2":
+          needs.Purple = true; needs.Red = true; needs.Gray = true; break;
+      }
+    });
+    const counts = {
+      Purple: needs.Purple ? 1 : 0,
+      Red:    needs.Red ? 1 : 0,
+      Blue:   needs.Blue ? 1 : 0,
+      Gray:   needs.Gray ? (1 + (hasPP ? 1 : 0)) : 0
+    };
+    return counts;
+  }
+
+  function renderTubes(){
+    const wrap = el("#tubeSection");
+    const list = el("#tubeList");
+    const counts = computeTubeCounts(selectedTests);
+    const entries = Object.entries(counts).filter(([_,c])=>c>0);
+    list.innerHTML = "";
+    if(entries.length===0){
+      wrap.hidden = true;
+      return;
+    }
+    wrap.hidden = false;
+    entries.forEach(([type,count])=>{
+      const tube = TUBES[type];
+      const card = document.createElement("div");
+      card.className = "tube-card";
+      const imgSrc = tubeSvgDataURI(tube.color);
+      card.innerHTML = `
+        <img src="${imgSrc}" alt="${tube.name}">
+        <div>
+          <div class="tube-name">${tube.name}</div>
+          <div class="tube-count">x ${count}</div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  /* =========================
+     Multiselect (Tests) – desktop/mobile safe + smoother focus
      ========================= */
   const testsSelect = el("#testsSelect");
   const chips = el("#chips");
@@ -501,6 +611,24 @@
   const msEmpty = el("#msEmpty");
   const testsValue = el("#testsValue");
   let selectedTests = [];
+  let lastSelectTs = 0; // guard against double-fire
+
+  function afterReopenFocus(){
+    setTimeout(()=>{ msInput.focus(); filterList(""); }, 200);
+  }
+
+  function addTest(t){
+    if(!t || selectedTests.includes(t)) return;
+    const now = Date.now();
+    if(now - lastSelectTs < 250) return; // guard double selection on touch
+    lastSelectTs = now;
+
+    selectedTests.push(t);
+    msInput.value = "";
+    syncTests(true);
+    openPopup();
+    afterReopenFocus();
+  }
 
   function renderChips(){
     chips.innerHTML = "";
@@ -508,25 +636,27 @@
       const c = document.createElement("span");
       c.className = "chip";
       c.innerHTML = `<span>${t}</span><button title="Remove" aria-label="Remove">&times;</button>`;
-      c.querySelector("button").addEventListener("click", () => {
+      c.querySelector("button").addEventListener("click", (ev) => {
+        ev.stopPropagation();
         selectedTests = selectedTests.filter(x => x!==t);
-        syncTests();
+        msInput.value = "";
+        syncTests(true);
+        openPopup();
+        afterReopenFocus();
       });
       chips.appendChild(c);
     });
     chips.appendChild(msInput);
     testsValue.value = selectedTests.join(", ");
-    autoPPTime();
-    calcCost();
-    updateProgress();
+    autoPPTime(); calcCost(); updateProgress(); renderTubes();
   }
 
   function openPopup(){
     if(msPopup.hidden){
       msPopup.hidden = false;
       testsSelect.setAttribute("aria-expanded","true");
-      filterList(msInput.value.trim());
     }
+    filterList(msInput.value.trim());
   }
   function closePopup(){
     if(!msPopup.hidden){
@@ -542,35 +672,59 @@
     msList.innerHTML = "";
     if(items.length===0){ msEmpty.hidden = false; return; }
     msEmpty.hidden = true;
+
     items.forEach(t=>{
       const li = document.createElement("li");
       li.className = "ms-item";
       li.textContent = t;
-      li.addEventListener("click", ()=>{
-        if(!selectedTests.includes(t)){
-          selectedTests.push(t);
-          syncTests(true);
-          msInput.focus();
-          filterList(msInput.value.trim());
+
+      // Desktop (mouse): select on pointerdown before blur
+      li.addEventListener("pointerdown", (ev)=>{
+        if(ev.pointerType === "mouse" && ev.button === 0){
+          ev.preventDefault(); ev.stopPropagation();
+          addTest(t);
         }
       });
+
+      // Generic fallback (touch / keyboards / non-mouse)
+      li.addEventListener("click", (ev)=>{
+        ev.preventDefault(); ev.stopPropagation();
+        addTest(t);
+      });
+
       msList.appendChild(li);
     });
   }
   function syncTests(keepOpen=false){
     renderChips();
-    filterList(msInput.value.trim());
-    if(!keepOpen && (!msInput.value || msInput.value.trim()==="")) closePopup();
+    filterList(msInput.value ? msInput.value.trim() : "");
+    if(keepOpen){ openPopup(); }
+    else if(!msInput.value || msInput.value.trim()===""){ closePopup(); }
   }
+
   testsSelect.addEventListener("pointerdown", ()=>{ msInput.focus(); openPopup(); });
   msInput.addEventListener("focus", openPopup);
-  msInput.addEventListener("input", (e)=> filterList(e.target.value));
+
+  // Typing updates the list (and keeps popup open)
+  msInput.addEventListener("input", (e)=> { openPopup(); filterList(e.target.value); });
+
+  // Keyboard UX: Backspace removes last chip; Enter selects top suggestion
   msInput.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter"){ e.preventDefault(); }
+    if(e.key === "Enter"){
+      e.preventDefault();
+      const first = msList.querySelector(".ms-item");
+      if(first){ addTest(first.textContent.trim()); }
+      return;
+    }
     if(e.key === "Backspace" && !msInput.value && selectedTests.length){
-      selectedTests.pop(); syncTests(true);
+      selectedTests.pop();
+      msInput.value = "";
+      syncTests(true);
+      openPopup();
+      afterReopenFocus();
     }
   });
+
   document.addEventListener("click",(e)=>{ if(!testsSelect.contains(e.target)) closePopup(); });
   filterList("");
 
@@ -673,24 +827,12 @@
     const pct = idx<0 ? 0 : Math.round(((idx+1) / STAGES.length) * 100);
     return pct;
   }
-  function updateProgress(){
-    const pct = stagePercent(completion.value);
-    progressBar.style.width = pct + "%";
-  }
+  function updateProgress(){ const pct = stagePercent(completion.value); progressBar.style.width = pct + "%"; }
   completion.addEventListener("change", updateProgress);
   updateProgress();
 
   /* =========================
-     Toast
-     ========================= */
-  const toast = el("#toast");
-  function showToast(msg="Saved!"){
-    toast.textContent = msg; toast.classList.add("show");
-    setTimeout(()=> toast.classList.remove("show"), 2200);
-  }
-
-  /* =========================
-     Local cache for listing/editing
+     Local cache
      ========================= */
   const LS_KEY = "ghc_entries_cache_v1";
   const cache = {
@@ -705,7 +847,7 @@
   };
 
   /* =========================
-     Fetch server list to cache
+     Fetch server list
      ========================= */
   async function fetchServerList(){
     try{
@@ -726,7 +868,7 @@
   }
 
   /* =========================
-     In Progress rendering as Cards + Delete
+     In Progress list (cards) + Delete
      ========================= */
   const inProgressList = el("#inProgressList");
   const inProgressEmpty = el("#inProgressEmpty");
@@ -751,33 +893,52 @@
         <div class="progress" aria-label="Progress"><div class="bar" style="width:${pct}%"></div></div>
         <div class="card-actions">
           <button class="btn ghost sm" data-edit="${e.id}">Edit</button>
-          <button class="btn danger sm" data-del="${e.id}">Delete</button>
+          <button class="btn danger sm" data-del="${e.id}"><span class="btn-text">Delete</span></button>
         </div>
       `;
 
       row.querySelector('[data-edit]').addEventListener("click", ()=> loadForEdit(e));
-      row.querySelector('[data-del]').addEventListener("click", ()=> deleteEntry(e.id));
+      row.querySelector('[data-del]').addEventListener("click", (ev)=> deleteEntry(e.id, ev.currentTarget));
 
       inProgressList.appendChild(row);
     });
   }
 
-  async function deleteEntry(id){
+  /* Delete button spinner control */
+  function setDeleting(btn, on){
+    if(!btn) return;
+    if(on){
+      btn.setAttribute("disabled","disabled");
+      btn.dataset.original = btn.innerHTML;
+      btn.innerHTML = `<span class="spinner sm" aria-hidden="true"></span><span>Deleting...</span>`;
+    }else{
+      btn.removeAttribute("disabled");
+      btn.innerHTML = btn.dataset.original || `<span class="btn-text">Delete</span>`;
+    }
+  }
+
+  async function deleteEntry(id, btn){
     if(!confirm("Delete this entry permanently?")) return;
+    setDeleting(btn, true);
     try{
       const res = await fetch(`${SCRIPT_URL}?action=delete&id=${encodeURIComponent(id)}`, {method:"GET"});
-      const data = await res.json().catch(()=>({ok:false}));
-      if(data && data.ok){
+      let ok=false, data=null;
+      const ct = res.headers.get("content-type") || "";
+      if(ct.includes("application/json")){ data = await res.json().catch(()=>null); ok = !!(data && data.ok); }
+      else { ok = res.ok; } // accept 2xx HTML
+      if(ok){
         const list = cache.all().filter(x => String(x.id)!==String(id));
         cache.save(list);
         renderInProgress();
         showToast("Entry deleted");
       }else{
-        showToast("Delete failed");
+        showToast(data && data.error ? `Delete failed: ${data.error}` : "Delete failed");
       }
     }catch(err){
       console.error(err);
-      showToast("Error deleting");
+      showToast("Network error while deleting");
+    }finally{
+      setDeleting(btn, false);
     }
   }
 
@@ -796,7 +957,7 @@
     el('#address').value = e.address || "";
 
     selectedTests = (e.tests ? String(e.tests).split(",").map(s=>s.trim()).filter(Boolean) : []);
-    syncTests(false);
+    syncTests(true); openPopup();
 
     el('[name="doctor"]').value = e.doctor || "";
     el('#visitDate').value = e.date || "";
@@ -819,12 +980,14 @@
     el('#completion').value = e.completion || "scheduled";
     updateProgress();
 
+    el('#note').value = e.note || "";
+
     el('#editId').value = e.id || "";
     el('#submitContent').textContent = "Save Changes";
   }
 
   /* =========================
-     Submit with loading state
+     Submit with loading + robust transport
      ========================= */
   const form = el("#entryForm");
   const submitBtn = el("#submitBtn");
@@ -839,18 +1002,55 @@
     }
   }
 
+  function postViaIframe(formData){
+    return new Promise((resolve, reject)=>{
+      try{
+        const iframeName = "hidden_iframe_" + Date.now();
+        const iframe = document.createElement("iframe");
+        iframe.name = iframeName;
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+
+        const tempForm = document.createElement("form");
+        tempForm.method = "POST";
+        tempForm.action = SCRIPT_URL;
+        tempForm.target = iframeName;
+        tempForm.style.display = "none";
+
+        for (const [k,v] of formData.entries()){
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = k;
+          input.value = v;
+          tempForm.appendChild(input);
+        }
+
+        document.body.appendChild(tempForm);
+
+        iframe.addEventListener("load", ()=>{ 
+          resolve(); 
+          setTimeout(()=>{ iframe.remove(); tempForm.remove(); }, 0);
+        });
+
+        tempForm.submit();
+        setTimeout(()=>{ resolve(); iframe.remove(); tempForm.remove(); }, 1200);
+      }catch(err){ reject(err); }
+    });
+  }
+
   form.addEventListener("reset", ()=>{
     selectedTests = []; syncTests(false); calcCost(); autoPending(); updateProgress();
     ppTime.dataset.manual = "";
     el("#editId").value = "";
     el("#submitContent").textContent = "Submit Entry";
+    el("#note").value = "";
     setDefaults();
   });
 
   form.addEventListener("submit", async (e)=>{
     e.preventDefault();
 
-    if(!testsValue.value){ showToast("Please select at least one test"); msInput.focus(); return; }
+    if(!testsValue.value){ showToast("Please select at least one test"); msInput.focus(); openPopup(); return; }
     if(el("#visitType").value === "Home visit" && !el("#address").value.trim()){ el("#address").reportValidity(); el("#address").focus(); showToast("Address is required for Home visit"); return; }
     if(selectedTests.includes("PP") && !el("#ppTime").value){ showToast("Please confirm PP time"); el("#ppTime").focus(); return; }
     if(el("#paymentStatus").value.includes("Pending")){
@@ -866,15 +1066,12 @@
     const date = el("#visitDate").value || "";
     const time = el("#visitTime").value || "";
     data.set("visit_datetime", date && time ? `${date}T${time}` : "");
-
     const id = el("#editId").value || String(Date.now());
     data.set("id", id);
 
     setSubmitting(true);
 
-    try{
-      await fetch(SCRIPT_URL, { method:"POST", body:data, mode:"no-cors" });
-
+    const completeSuccessFlow = ()=>{
       const entryObj = {
         id,
         patient_name: data.get("patient_name"),
@@ -898,11 +1095,11 @@
         payment_mode: data.get("payment_mode"),
         payment_status: data.get("payment_status"),
         pending_payment: data.get("pending_payment"),
-        completion: data.get("completion")
+        completion: data.get("completion"),
+        note: data.get("note")
       };
       cache.upsert(entryObj);
       renderInProgress();
-
       showToast(el("#editId").value ? "Changes saved" : "Entry saved successfully");
 
       form.reset();
@@ -912,9 +1109,20 @@
       el("#editId").value = "";
       el("#submitContent").textContent = "Submit Entry";
       document.querySelector('.tab-btn[data-tab="inprogress"]').click();
+    };
+
+    try{
+      await fetch(SCRIPT_URL, { method:"POST", body:data, mode:"no-cors", cache:"no-cache" });
+      completeSuccessFlow();
     }catch(err){
-      console.error(err);
-      showToast("Failed to save. Check Apps Script deployment & CORS");
+      console.warn("Fetch submit failed, falling back to iframe:", err);
+      try{
+        await postViaIframe(data);
+        completeSuccessFlow();
+      }catch(e2){
+        console.error("Iframe submit also failed:", e2);
+        showToast("Could not submit. Check Web App URL / deployment.");
+      }
     }finally{
       setSubmitting(false);
     }
@@ -933,6 +1141,7 @@
     el("#visitDate").value = `${yyyy}-${mm}-${dd}`;
     el("#visitTime").value = `${hh}:${mi}`;
     autoPPTime();
+    renderTubes();
   }
 
   /* =========================
@@ -976,8 +1185,6 @@
   function selectPatient(p){
     patientNameInput.value = p.patient_name || "";
     nameSuggestions.hidden = true;
-
-    // Autofill latest info for that patient
     el('[name="age"]').value = p.age || "";
     el('[name="gender"]').value = p.gender || "";
     el('[name="contact"]').value = p.contact || "";
@@ -985,9 +1192,7 @@
     el('#address').value = p.address || "";
   }
 
-  /* =========================
-     Init
-     ========================= */
+  /* Init */
   setDefaults();
   fetchServerList().then(renderInProgress);
 </script>
