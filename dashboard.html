@@ -8,7 +8,6 @@
   <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Tailwind theme tweaks
     tailwind.config = {
       theme: {
         extend: {
@@ -19,9 +18,7 @@
               500:'#2aa7ff',600:'#1b83db',700:'#1767ad',800:'#174f83',900:'#163f66',
             },
           },
-          boxShadow: {
-            'smooth': '0 10px 30px rgba(2, 8, 23, .08)',
-          },
+          boxShadow: { smooth: '0 10px 30px rgba(2, 8, 23, .08)' },
           backgroundImage: {
             'brand-grad': 'linear-gradient(135deg, #2aa7ff 0%, #8D6BFF 50%, #FF7AD9 100%)',
             'card-grad': 'linear-gradient(180deg, rgba(255,255,255,.80), rgba(255,255,255,.65))',
@@ -35,10 +32,7 @@
     .glass { backdrop-filter: saturate(1.2) blur(8px); -webkit-backdrop-filter: saturate(1.2) blur(8px); background: rgba(255,255,255,0.75); }
     .lift:hover { transform: translateY(-2px); }
     .transition-basic { transition: all .2s ease; }
-    /* Smooth fade for content swaps */
     .fade { transition: opacity .25s ease; }
-
-    /* We will compute the content height with JS to truly hit the bottom on all devices */
     .content-frame { display:block; width:100%; border:0; }
   </style>
 </head>
@@ -51,10 +45,9 @@
   <header id="topbar" class="sticky top-0 z-40 bg-white/80 glass shadow-smooth">
     <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-3 py-3">
-        <!-- Logo: square with rounded corners -->
-        <div class="h-10 w-10 rounded-lg overflow-hidden ring-1 ring-slate-200 flex items-center justify-center">
-          <!-- Customizable brand logo (set via JS); falls back to SVG if not set -->
-          <img id="brandLogo" alt="Goodness Healthcare Logo" class="h-full w-full object-cover" />
+        <!-- GitHub-hosted Logo.png -->
+        <div class="h-10 w-10 rounded-lg overflow-hidden ring-1 ring-slate-200 flex items-center justify-center bg-white">
+          <img alt="Goodness Healthcare Logo" class="h-full w-full object-contain" src="Logo.png" />
         </div>
 
         <div class="flex-1 min-w-0">
@@ -63,11 +56,9 @@
         </div>
 
         <!-- Mobile sidebar toggle -->
-        <button id="sidebarToggle" class="lg:hidden px-3 py-2 rounded-lg bg-white ring-1 ring-slate-200 hover:ring-brand-300 transition-basic"
-                aria-label="Toggle menu">
+        <button id="sidebarToggle" class="lg:hidden px-3 py-2 rounded-lg bg-white ring-1 ring-slate-200 hover:ring-brand-300 transition-basic" aria-label="Toggle menu">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
       </div>
@@ -83,6 +74,7 @@
                     fixed top-24 bottom-4 left-4 z-30 translate-x-[-120%] lg:translate-x-0
                     lg:static lg:inset-auto lg:z-auto
                     h-[calc(100vh-7rem)] lg:h-[calc(100vh-8rem)] overflow-y-auto">
+
         <!-- Signed-in user summary + Sign Out -->
         <div class="mb-4 rounded-xl bg-white/70 p-3 ring-1 ring-slate-200">
           <div class="flex items-center gap-3">
@@ -92,34 +84,24 @@
               <p id="userEmail" class="truncate text-xs text-slate-600">—</p>
             </div>
           </div>
-          <button id="signOutBtn"
-                  class="mt-3 w-full rounded-lg bg-gradient-to-r from-brand-500 to-violet-500 py-2 text-white text-sm font-medium shadow-sm hover:shadow
-                         active:scale-[.99] transition-basic">
+          <button id="signOutBtn" class="mt-3 w-full rounded-lg bg-gradient-to-r from-brand-500 to-violet-500 py-2 text-white text-sm font-medium shadow-sm hover:shadow active:scale-[.99] transition-basic">
             Sign Out
           </button>
         </div>
 
-        <!-- Nav (font size bumped to text-base) -->
+        <!-- Nav -->
         <nav id="sideNav" class="space-y-1 text-base">
-          <!-- Use data-target to load into content without full reload -->
-          <a href="login.html" data-target="login.html"
-             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
-             data-roles="admin,staff">
+          <a href="login.html" data-target="login.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🔐</span>
             <span>Login Info</span>
           </a>
 
-          <a href="home.html" data-target="home.html"
-             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
-             data-roles="admin,staff">
+          <a href="home.html" data-target="home.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏠</span>
             <span>Dashboard</span>
           </a>
 
-          <!-- Add Entry (default active -> entry.html) -->
-          <a href="entry.html" data-target="entry.html"
-             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2"
-             data-roles="admin,staff">
+          <a href="entry.html" data-target="entry.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2" data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100">➕</span>
             <span>Add Entry</span>
           </a>
@@ -183,14 +165,8 @@
 
       <!-- Content -->
       <main class="flex-1">
-        <!-- Content card (kept same size/shape) -->
         <section id="contentCard" class="rounded-2xl ring-1 ring-white/40 shadow-smooth bg-card-grad p-0 overflow-hidden">
-          <!-- Iframe fills entire box; height computed to hit bottom of screen -->
-          <iframe id="contentFrame"
-            src="entry.html"
-            class="content-frame fade opacity-100"
-            title="Content Area">
-          </iframe>
+          <iframe id="contentFrame" src="entry.html" class="content-frame fade opacity-100" title="Content Area"></iframe>
         </section>
       </main>
     </div>
@@ -201,18 +177,10 @@
 
   <!-- Firebase v10 (Modular, CDN) + Auth Guard + Role-based visibility -->
   <script type="module">
-    // --- Firebase SDKs (v10) ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // ========== CONFIGURABLE LOGO ==========
-    // Option A) Hardcode here:
-    const BRAND_LOGO_URL = "https://drive.google.com/file/d/1ZHdzfzeQzrS3BG7kbEbmprpCoh5N57ox/preview"; // e.g. "https://your.cdn.com/logo.png"
-    // Option B) Or set at runtime in console or code:
-    // localStorage.setItem('brandLogoUrl', 'https://your.cdn.com/logo.png');
-
-    // --- Config (provided) ---
     const firebaseConfig = {
       apiKey: "AIzaSyCXQyQRw4JRaWDNbca4YQkanMWnfu8SuH0",
       authDomain: "pathologylab-9d156.firebaseapp.com",
@@ -223,7 +191,6 @@
       measurementId: "G-S279W29G9Q"
     };
 
-    // --- Init ---
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     let db = null;
@@ -237,43 +204,10 @@
     const sidebar = document.getElementById('sidebar');
     const toggle  = document.getElementById('sidebarToggle');
     const overlay = document.getElementById('overlay');
-
     const contentCard  = document.getElementById('contentCard');
     const contentFrame = document.getElementById('contentFrame');
     const sideNav      = document.getElementById('sideNav');
 
-    // ======= Brand Logo Support with Fallback =======
-    const fallbackLogoDataUrl = "data:image/svg+xml;utf8," + encodeURIComponent(`
-      <svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>
-        <defs>
-          <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
-            <stop offset='0%' stop-color='#2aa7ff'/>
-            <stop offset='50%' stop-color='#8D6BFF'/>
-            <stop offset='100%' stop-color='#FF7AD9'/>
-          </linearGradient>
-        </defs>
-        <rect width='160' height='160' rx='18' fill='url(#g)'/>
-        <g fill='#ffffff'>
-          <circle cx='55' cy='80' r='26'/>
-          <rect x='88' y='54' width='20' height='52' rx='10'/>
-          <rect x='68' y='70' width='60' height='20' rx='10'/>
-        </g>
-      </svg>
-    `);
-
-    function applyBrandLogo() {
-      const el = document.getElementById('brandLogo');
-      const url = (localStorage.getItem('brandLogoUrl') || BRAND_LOGO_URL || "").trim();
-      if (!url) {
-        el.src = fallbackLogoDataUrl;
-        return;
-      }
-      el.src = url;
-      el.onerror = () => { el.src = fallbackLogoDataUrl; }; // graceful fallback
-    }
-    applyBrandLogo();
-
-    // ======= Role-based visibility helpers =======
     function initialsFromName(name, email) {
       const source = (name || email || 'U').trim();
       const parts = source.split(/\s+/).filter(Boolean);
@@ -286,8 +220,7 @@
       if (Array.isArray(roleOrRoles)) roleOrRoles.forEach(r => roleSet.add(String(r).toLowerCase()));
       else if (roleOrRoles) String(roleOrRoles).split(',').map(s=>s.trim().toLowerCase()).forEach(r => roleSet.add(r));
       document.querySelectorAll('[data-roles]').forEach(el => {
-        const allowed = String(el.getAttribute('data-roles') || '')
-                          .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+        const allowed = String(el.getAttribute('data-roles') || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
         if (allowed.length && roleSet.size) {
           const match = allowed.some(r => roleSet.has(r));
           if (!match) el.classList.add('hidden');
@@ -303,46 +236,28 @@
           const data = snap.data();
           return data?.roles ?? data?.role ?? null;
         }
-      } catch (err) {
-        console.warn('Role fetch failed:', err);
-      }
+      } catch (err) { console.warn('Role fetch failed:', err); }
       return null;
     }
 
-    // --- Auth Guard ---
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.replace('login.html'); // redirect if no session
-        return;
-      }
+      if (!user) { window.location.replace('login.html'); return; }
       const name = user.displayName || '';
       const email = user.email || '';
       userNameEl.textContent  = name || '(No display name)';
       userEmailEl.textContent = email || '(No email)';
       userAvatar.textContent  = initialsFromName(name, email);
-
       const roleOrRoles = await fetchUserRole(user.uid);
       if (roleOrRoles) applyRoleVisibility(roleOrRoles);
     });
 
-    // --- Sign Out ---
     signOutBtn.addEventListener('click', async () => {
-      try { await signOut(auth); } catch (e) {
-        alert('Failed to sign out. Please try again.'); console.error(e);
-      }
+      try { await signOut(auth); } catch (e) { alert('Failed to sign out. Please try again.'); console.error(e); }
     });
 
-    // ======= Mobile Sidebar toggle =======
-    function openSidebar() {
-      sidebar.style.transform = 'translateX(0)';
-      overlay.style.opacity = '1';
-      overlay.style.pointerEvents = 'auto';
-    }
-    function closeSidebar() {
-      sidebar.style.transform = '';
-      overlay.style.opacity = '0';
-      overlay.style.pointerEvents = 'none';
-    }
+    // Mobile Sidebar toggle
+    function openSidebar() { sidebar.style.transform = 'translateX(0)'; overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto'; }
+    function closeSidebar() { sidebar.style.transform = ''; overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none'; }
     toggle?.addEventListener('click', () => {
       const isOpen = sidebar.style.transform === 'translateX(0px)' || sidebar.style.transform === 'translateX(0)';
       isOpen ? closeSidebar() : openSidebar();
@@ -352,14 +267,12 @@
     function handleMQ(e){ if (e.matches) closeSidebar(); }
     mq.addEventListener ? mq.addEventListener('change', handleMQ) : mq.addListener(handleMQ);
 
-    // ======= ACTIVE TAB HIGHLIGHTING =======
+    // Active Tab Highlighting
     function setActiveLink(targetPath) {
       const links = sideNav.querySelectorAll('.nav-link');
       links.forEach(a => {
-        a.classList.remove('ring-2','ring-brand-300','bg-white','shadow-sm');
-        a.classList.remove('text-brand-800');
-        const badge = a.querySelector('.current-badge');
-        if (badge) badge.remove();
+        a.classList.remove('ring-2','ring-brand-300','bg-white','shadow-sm','text-brand-800');
+        const badge = a.querySelector('.current-badge'); if (badge) badge.remove();
       });
       const active = [...links].find(a => (a.dataset.target || a.getAttribute('href')) === targetPath);
       if (active) {
@@ -371,78 +284,51 @@
       }
     }
 
-    // ======= LOAD INTO CONTENT (without full page reload) =======
-    // We keep an iframe to isolate each section's own CSS/JS.
-    // Change src with a smooth fade, push to history, and close sidebar on mobile.
+    // SPA: Load into content without full page reload
     function loadSection(targetPath, push = true) {
       if (!targetPath) return;
       if (contentFrame.getAttribute('src') === targetPath) return;
 
       setActiveLink(targetPath);
-      contentFrame.style.opacity = '0'; // fade out
-      // Once the iframe finishes loading, fade in
+      contentFrame.style.opacity = '0';
       const onLoad = () => {
         contentFrame.removeEventListener('load', onLoad);
-        // Recompute height in case new page has different internal sizing effects
-        requestAnimationFrame(() => {
-          computeContentHeight();
-          contentFrame.style.opacity = '1';
-        });
+        requestAnimationFrame(() => { computeContentHeight(); contentFrame.style.opacity = '1'; });
       };
       contentFrame.addEventListener('load', onLoad);
       contentFrame.src = targetPath;
 
-      if (push) {
-        history.pushState({ targetPath }, "", "#" + encodeURIComponent(targetPath));
-      }
-      // Close sidebar on mobile after selection
+      if (push) history.pushState({ targetPath }, "", "#" + encodeURIComponent(targetPath));
       closeSidebar();
     }
 
-    // Intercept sidebar link clicks
     sideNav.addEventListener('click', (e) => {
-      const a = e.target.closest('a.nav-link');
-      if (!a) return;
-      const targetPath = a.dataset.target || a.getAttribute('href');
-      if (!targetPath) return;
-      e.preventDefault();
-      loadSection(targetPath, true);
+      const a = e.target.closest('a.nav-link'); if (!a) return;
+      const targetPath = a.dataset.target || a.getAttribute('href'); if (!targetPath) return;
+      e.preventDefault(); loadSection(targetPath, true);
     });
 
-    // Handle back/forward
     window.addEventListener('popstate', (e) => {
       const targetPath = e.state?.targetPath || decodeURIComponent((location.hash || '').slice(1)) || 'entry.html';
       loadSection(targetPath, false);
     });
 
-    // Boot: load from hash or default to entry.html
+    // Boot
     const bootPath = decodeURIComponent((location.hash || '').slice(1)) || 'entry.html';
     setActiveLink(bootPath);
-    if (contentFrame.getAttribute('src') !== bootPath) {
-      contentFrame.src = bootPath;
-    }
+    if (contentFrame.getAttribute('src') !== bootPath) contentFrame.src = bootPath;
 
-    // ======= CONTENT HEIGHT: stretch to bottom of screen =======
+    // Content height: stretch to bottom
     function computeContentHeight() {
-      // Ensure the iframe height exactly fills from the top of the card to the bottom of the viewport
       const rect = contentCard.getBoundingClientRect();
-      // small extra bottom gap to account for page bottom padding (≈ 16px)
       const bottomPadding = 16;
       const available = Math.max(200, window.innerHeight - rect.top - bottomPadding);
       contentFrame.style.height = available + "px";
     }
-
-    // Recompute on load, resize, orientation changes
     window.addEventListener('load', computeContentHeight);
     window.addEventListener('resize', computeContentHeight);
     window.addEventListener('orientationchange', computeContentHeight);
-
-    // Also recompute after fonts load (layout might shift)
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => computeContentHeight()).catch(()=>{});
-    }
-
-    // Initial compute (in case load event is delayed)
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(() => computeContentHeight()).catch(()=>{}); }
     computeContentHeight();
   </script>
 </body>
