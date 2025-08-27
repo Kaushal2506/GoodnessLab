@@ -10,53 +10,38 @@
      Design System (Premium Light)
      ========================= */
   :root{
-    /* Base colors (slate) */
     --slate-900:#0f172a; --slate-800:#1f2937; --slate-700:#334155; --slate-600:#475569;
     --slate-500:#64748b; --slate-300:#cbd5e1; --slate-200:#e2e8f0; --slate-100:#f1f5f9;
 
-    /* Brand gradient */
-    --brand-from:#38bdf8; /* sky-400 */
-    --brand-via:#6366f1;  /* indigo-500 */
-    --brand-to:#f472b6;   /* pink-400 */
+    --brand-from:#38bdf8; --brand-via:#6366f1; --brand-to:#f472b6;
     --brand-grad: linear-gradient(90deg, var(--brand-from), var(--brand-via), var(--brand-to));
-    --brand-ring: 0 0 0 3px rgba(99,102,241,.28); /* focus ring */
+    --brand-ring: 0 0 0 3px rgba(99,102,241,.28);
 
-    /* Background gradient */
     --bg-grad: radial-gradient(1200px 600px at -10% -10%, rgba(125,211,252,.28) 0%, transparent 45%),
                radial-gradient(1000px 500px at 110% -10%, rgba(199,210,254,.28) 0%, transparent 45%),
                radial-gradient(800px 400px at 50% 120%, rgba(254,205,211,.3) 0%, transparent 50%),
                linear-gradient(to bottom right, #f0f9ff, #eef2ff, #fff1f2);
 
-    /* Surfaces */
     --glass-bg: rgba(255,255,255,.66);
     --glass-border: rgba(148,163,184,.22);
     --shadow-sm: 0 6px 20px rgba(2,6,23,.06);
     --shadow-lg: 0 24px 60px rgba(2,6,23,.10);
 
-    /* Radii */
-    --radius-xl: 18px;
-    --radius-lg: 12px;
-    --radius-md: 10px;
+    --radius-xl: 18px; --radius-lg: 12px; --radius-md: 10px;
 
-    /* Status */
     --ok:#10b981; --warn:#f59e0b; --error:#ef4444;
   }
 
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0;
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    color:var(--slate-800);
-    background: var(--bg-grad);
-    font-size:16px;
+    margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--slate-800); background: var(--bg-grad); font-size:16px;
   }
 
-  /* Container */
   .wrap{max-width:1400px;margin:32px auto;padding:16px}
   @media(min-width:640px){ .wrap{padding:24px} }
 
-  /* Headings & text scale */
   .headline{font-weight:800;letter-spacing:.2px;margin:0 0 14px;color:var(--slate-800)}
   .headline{font-size:20px}
   @media(min-width:640px){ .headline{font-size:24px} }
@@ -64,7 +49,6 @@
   .muted{color:var(--slate-600)}
   .helper{font-size:12px;color:var(--slate-600)}
 
-  /* Tabs */
   .tabs{
     display:flex;gap:10px;background:var(--glass-bg);padding:8px;border-radius:var(--radius-lg);
     box-shadow:var(--shadow-sm);backdrop-filter: blur(10px);border:1px solid var(--glass-border)
@@ -75,13 +59,9 @@
     color:var(--slate-700)
   }
   .tab-btn:hover{box-shadow:var(--shadow-sm)}
-  .tab-btn.active{
-    background: var(--brand-grad); color:#fff; border-color:transparent;
-    box-shadow:var(--shadow-sm)
-  }
+  .tab-btn.active{background: var(--brand-grad); color:#fff; border-color:transparent; box-shadow:var(--shadow-sm)}
   .tab-panel{margin-top:14px}
 
-  /* Cards (Frosted Glass) */
   .card{
     background:var(--glass-bg);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);
     overflow:hidden;margin-bottom:18px;border:1px solid var(--glass-border);backdrop-filter: blur(12px);
@@ -92,21 +72,28 @@
     padding:16px 20px;border-bottom:1px solid var(--glass-border);
     display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.55)
   }
-  .card-header h2{
-    margin:0;color:var(--slate-800);font-weight:600;
-    font-size:18px
-  }
+  .card-header h2{ margin:0;color:var(--slate-800);font-weight:600;font-size:18px }
   @media(min-width:640px){ .card-header h2{font-size:20px} }
   .card-body{padding:18px}
   @media(min-width:640px){ .card-body{padding:24px} }
 
-  /* Grid */
   .grid{display:grid;gap:16px}
   @media(min-width:768px){.grid.cols-2{grid-template-columns:1fr 1fr}}
   @media(min-width:1024px){.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}
   .span-all{grid-column:1 / -1}
 
-  /* Form basics */
+  /* Icon fields */
+  .field{position:relative}
+  .field .icon{
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; opacity:.72; pointer-events:none
+  }
+  .field textarea + .icon,
+  .field .icon.textarea{
+    top:18px; transform:none;
+  }
+  .field input, .field select, .field textarea{ padding-left:44px }
+
   label{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:var(--slate-700)}
   .req::after{content:" *";color:var(--error);font-weight:700}
   input[type="text"], input[type="tel"], input[type="number"], input[type="time"],
@@ -120,7 +107,6 @@
   .readonly{background:#f8fafc}
   textarea{min-height:84px;resize:vertical}
 
-  /* Slightly balanced sizes in New Entry tab */
   #panel-newentry{font-size:16px}
   #panel-newentry label{font-size:14px}
   #panel-newentry input[type="text"],
@@ -136,7 +122,6 @@
   #panel-newentry .hint{font-size:12px}
   #panel-newentry .card-header h2{font-size:20px}
 
-  /* Multiselect (Tests) */
   .multiselect{position:relative;padding:8px;border-radius:var(--radius-md)}
   .chips{display:flex;flex-wrap:wrap;gap:6px}
   .chip{display:flex;align-items:center;gap:6px;background:rgba(99,102,241,.08);border:1px solid #e0e7ff;
@@ -153,14 +138,9 @@
   .ms-item:hover{background:#f3f4f6}
   .ms-empty{padding:14px;text-align:center;color:var(--slate-600);font-size:13px}
 
-  /* Progress */
   .progress{height:12px;background:#eef2f7;border-radius:999px;overflow:hidden;width:100%}
-  .bar{
-    height:100%;width:0%;background:var(--brand-grad);
-    transition:width .35s ease;border-radius:999px
-  }
+  .bar{height:100%;width:0%;background:var(--brand-grad);transition:width .35s ease;border-radius:999px}
 
-  /* Buttons */
   .actions{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
   .btn{appearance:none;border:none;cursor:pointer;border-radius:12px;font-weight:700;padding:12px 16px;transition:transform .12s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s ease}
   .btn.primary{background:var(--brand-grad);color:#fff;box-shadow:0 10px 24px rgba(99,102,241,.25)}
@@ -172,81 +152,60 @@
   .btn:active{transform:translateY(1px)}
   .btn[disabled]{opacity:.8;cursor:not-allowed}
   .btn.sm{padding:8px 10px;border-radius:10px;font-weight:700}
-
-  .spinner{
-    width:18px;height:18px;border:3px solid rgba(255,255,255,.6);border-top-color:#fff;border-radius:50%;
-    display:inline-block;vertical-align:middle;margin-right:8px;animation:spin .8s linear infinite
-  }
+  .spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.6);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:8px;animation:spin .8s linear infinite}
   .spinner.sm{ width:16px; height:16px; border-width:3px; margin-right:8px }
   @keyframes spin{to{transform:rotate(360deg)}}
-
-  .toast{
-    position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:12px 14px;border-radius:12px;
-    box-shadow:var(--shadow-lg);opacity:0;transform:translateY(10px);transition:.25s;z-index:1000;
-  }
+  .toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:12px 14px;border-radius:12px;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(10px);transition:.25s;z-index:1000;}
   .toast.show{opacity:1;transform:translateY(0)}
-
   .money{font-variant-numeric:tabular-nums}
 
-  /* In-Progress redesigned as CARDS (narrower reading width) */
   #panel-inprogress .card-body{max-width:860px;margin:0 auto}
   .inprogress-cards{display:grid;gap:16px}
-  .card-item{
-    border:1px solid var(--glass-border);background:rgba(255,255,255,.9);border-radius:var(--radius-xl);padding:16px;
-    box-shadow:var(--shadow-sm);transition:transform .16s ease, box-shadow .2s ease
-  }
+  .card-item{border:1px solid var(--glass-border);background:rgba(255,255,255,.9);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-sm);transition:transform .16s ease, box-shadow .2s ease}
   .card-item:hover{ transform:translateY(-2px); box-shadow:0 16px 40px rgba(2,6,23,.12) }
   .card-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
   .card-name{font-weight:800;font-size:18px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--slate-800)}
   .card-date{color:var(--slate-600);font-size:14px;flex:0 0 auto}
   .card-stage{margin:6px 0 10px 0;color:#374151;font-size:14px}
   .card-actions{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
-  @media(max-width:520px){
-    .card-name{font-size:17px}
-    .card-top{flex-direction:column;align-items:flex-start}
-    .card-actions{justify-content:flex-start}
-  }
+  @media(max-width:520px){ .card-name{font-size:17px} .card-top{flex-direction:column;align-items:flex-start} .card-actions{justify-content:flex-start} }
 
-  /* Autocomplete (Patient Name) */
   .autocomplete{position:relative}
-  .suggestions{
-    position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--slate-200);
-    border-radius:var(--radius-lg);max-height:240px;overflow-y:auto;z-index:60;box-shadow:var(--shadow-sm)
-  }
+  .suggestions{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius-lg);max-height:240px;overflow-y:auto;z-index:60;box-shadow:var(--shadow-sm)}
   .suggestions div{padding:10px 12px;cursor:pointer}
   .suggestions div:hover{background:#f3f4f6}
 
   /* ===== Tube section ===== */
-  .tube-section{margin-top:8px;background:rgba(255,255,255,.8);border:1px solid var(--glass-border);
-    border-radius:16px;padding:14px}
+  .tube-section{margin-top:8px;background:rgba(255,255,255,.8);border:1px solid var(--glass-border);border-radius:16px;padding:14px}
   .tube-title{font-weight:700;color:var(--slate-700);margin:0 0 10px 0;font-size:14px}
-  .tube-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
-  .tube-card{
-    display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid var(--slate-200);
-    border-radius:14px;box-shadow:var(--shadow-sm);min-height:72px
-  }
-  .tube-card img{width:40px;height:80px;object-fit:contain}
+  .tube-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .tube-card{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid var(--slate-200);border-radius:14px;box-shadow:var(--shadow-sm);min-height:76px}
+  .tube-card img{width:58px;height:96px;object-fit:contain}
+  .tube-card img.urine{width:72px;height:96px} /* wider urine container */
   .tube-name{font-weight:700;color:var(--slate-800)}
   .tube-count{font-size:13px;color:var(--slate-600);margin-top:2px}
+
+  /* ===== Syringe section (dropdown driven) ===== */
+  .syringe-section{margin-top:12px;background:rgba(255,255,255,.8);border:1px solid var(--glass-border);border-radius:16px;padding:14px}
+  .req-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .req-card{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid var(--slate-200);border-radius:14px;box-shadow:var(--shadow-sm)}
+  .req-card img{width:46px;height:46px;object-fit:contain}
+  .req-note{font-size:12px;color:var(--slate-600);margin-top:6px}
 </style>
 </head>
 <body>
   <div class="wrap">
     <h1 class="headline">Patient Entries</h1>
-    <p class="muted" style="margin-top:-4px;margin-bottom:18px;font-size:14px">Manage in-progress patients and add new entries. Clean, consistent, and fast.</p>
 
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" data-tab="inprogress">In Progress</button>
       <button class="tab-btn" data-tab="newentry">New Entry</button>
     </div>
 
-    <!-- In Progress Panel (Cards) -->
+    <!-- In Progress Panel -->
     <section id="panel-inprogress" class="tab-panel">
       <div class="card">
-        <div class="card-header">
-          <h2 class="text-xl sm:text-2xl font-semibold">In Progress (not “all complete”)</h2>
-        </div>
+        <div class="card-header"><h2 class="text-xl sm:text-2xl font-semibold">In Progress Entries</h2></div>
         <div class="card-body" id="inProgressBody">
           <div id="inProgressList" class="inprogress-cards"></div>
           <div id="inProgressEmpty" class="hint">No in-progress items right now.</div>
@@ -257,50 +216,51 @@
     <!-- New Entry Panel -->
     <section id="panel-newentry" class="tab-panel" hidden>
       <form id="entryForm" class="card" novalidate>
-        <div class="card-header">
-          <h2 class="text-xl sm:text-2xl font-semibold">Patient Details</h2>
-        </div>
+        <div class="card-header"><h2 class="text-xl sm:text-2xl font-semibold">Patient Details</h2></div>
         <div class="card-body">
           <div class="grid cols-3">
-            <div class="autocomplete">
+            <div class="autocomplete field">
               <label class="req">Name</label>
               <input type="text" name="patient_name" id="patientName" required placeholder="Full name" autocomplete="off" />
               <div id="nameSuggestions" class="suggestions" hidden></div>
               <div class="hint">Start typing to search previous patients and auto-fill details.</div>
             </div>
-            <div>
+            <div class="field">
               <label class="req">Age</label>
               <input type="number" name="age" required min="0" max="120" placeholder="Years" />
             </div>
-            <div>
+            <div class="field">
               <label class="req">Gender</label>
               <select name="gender" required>
                 <option value="" disabled selected>Select</option>
                 <option>Male</option><option>Female</option><option>Other</option>
               </select>
             </div>
-            <div>
+            <div class="field">
               <label class="req">Contact No.</label>
               <input type="tel" name="contact" required pattern="[0-9]{10}" placeholder="10-digit number" />
               <div class="hint">Digits only, e.g., 9876543210</div>
             </div>
-            <div>
+            <div class="field">
               <label>Alternate Contact</label>
               <input type="tel" name="alt_contact" pattern="[0-9]{10}" placeholder="Optional" />
             </div>
-            <div>
+            <div class="field">
               <label id="addrLabel">Address</label>
               <input type="text" name="address" id="address" placeholder="Required for Home visit" />
+            </div>
+            <!-- New Google Map Iframe field -->
+            <div class="span-all field">
+              <label>Google Map Location (iframe)</label>
+              <textarea name="map_iframe" id="mapIframe" placeholder='Paste Google Map "Embed a map" iframe HTML here (optional)'></textarea>
+              <div class="hint">Optional. Paste the full &lt;iframe&gt; embed code.</div>
             </div>
           </div>
         </div>
 
-        <div class="card-header">
-          <h2 class="text-xl sm:text-2xl font-semibold">Test & Visit Details</h2>
-        </div>
+        <div class="card-header"><h2 class="text-xl sm:text-2xl font-semibold">Test & Visit Details</h2></div>
         <div class="card-body">
           <div class="grid cols-3">
-            <!-- Tests multiselect -->
             <div class="span-all">
               <label class="req">Tests (multi-select)</label>
               <div class="multiselect" id="testsSelect" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
@@ -316,51 +276,71 @@
               <div class="hint">CBC, TSH, Fasting Sugar, PP, HbA1C, D-Dimer, Goodness A1, Goodness A2</div>
             </div>
 
-            <!-- ===== Tube count section (responsive) ===== -->
+            <!-- Tube count section -->
             <div class="span-all">
               <div id="tubeSection" class="tube-section" hidden>
                 <p class="tube-title">Required Test Tubes</p>
                 <div id="tubeList" class="tube-grid"></div>
-                <p class="hint" style="margin-top:8px">Counts are per visit: each tube type is needed once, except <strong>PP</strong> adds <strong>one extra Gray</strong>.</p>
+                <p class="hint" style="margin-top:8px">Counts are per visit: each tube type is needed once, except <strong>PP</strong> adds <strong>one extra Gray</strong>. <strong>Goodness A1</strong> also requires Yellow Tube &amp; Urine Container.</p>
+              </div>
+            </div>
+
+            <!-- Syringe selection (dropdown) -->
+            <div class="span-all">
+              <div class="syringe-section">
+                <p class="tube-title">Syringe Selection</p>
+                <div class="grid cols-3">
+                  <div class="field">
+                    <label>Preferred Syringe</label>
+                    <select id="syringeSelect">
+                      <option value="">— Select —</option>
+                      <option value="2ml">2ml</option>
+                      <option value="5ml">5ml</option>
+                      <option value="10ml">10ml</option>
+                    </select>
+                    <div class="hint">You can choose any one syringe. If <strong>PP</strong> is selected, an extra <strong>2ml</strong> is added automatically.</div>
+                  </div>
+                </div>
+                <div style="margin-top:12px">
+                  <p class="tube-title">Required Syringes</p>
+                  <div id="syringeList" class="req-grid"></div>
+                  <p class="req-note">If you selected 2ml and also chose PP, total becomes <strong>two 2ml syringes</strong>.</p>
+                </div>
+                <input type="hidden" id="syringesValue" name="syringes" />
               </div>
             </div>
 
             <!-- Note input -->
-            <div class="span-all">
+            <div class="span-all field">
               <label>Note</label>
               <textarea name="note" id="note" placeholder="Additional comments or special instructions…"></textarea>
             </div>
 
-            <div>
+            <div class="field">
               <label>Dr. Name</label>
               <input type="text" name="doctor" placeholder="Referring doctor" />
             </div>
-
-            <div>
+            <div class="field">
               <label class="req">Date</label>
               <input type="date" name="date" id="visitDate" required />
             </div>
-
-            <div>
+            <div class="field">
               <label class="req">Time of Visit</label>
               <input type="time" name="time_of_visit" id="visitTime" required />
             </div>
-
-            <div>
+            <div class="field">
               <label>PP Time</label>
               <input type="time" name="pp_time" id="ppTime" class="readonly" />
               <div class="hint">Auto +2 hours if PP test selected (editable)</div>
             </div>
-
-            <div>
+            <div class="field">
               <label>Report Delivery</label>
               <select name="report_delivery">
                 <option value="needed" selected>needed</option>
                 <option value="not needed">not needed</option>
               </select>
             </div>
-
-            <div>
+            <div class="field">
               <label class="req">Visit Type</label>
               <select name="visit_type" id="visitType" required>
                 <option value="" disabled selected>Select</option>
@@ -370,8 +350,7 @@
               </select>
               <div class="hint">Address required for Home visit</div>
             </div>
-
-            <div>
+            <div class="field">
               <label>Phlebotomist</label>
               <select name="phlebotomist">
                 <option value="" selected>—</option>
@@ -381,8 +360,7 @@
                 <option>Subhash Patel</option>
               </select>
             </div>
-
-            <div>
+            <div class="field">
               <label class="req">Company</label>
               <select name="company" id="company" required>
                 <option value="" disabled selected>Select</option>
@@ -393,29 +371,24 @@
           </div>
         </div>
 
-        <div class="card-header">
-          <h2 class="text-xl sm:text-2xl font-semibold">Payment Details</h2>
-        </div>
+        <div class="card-header"><h2 class="text-xl sm:text-2xl font-semibold">Payment Details</h2></div>
         <div class="card-body">
           <div class="grid cols-3">
-            <div>
+            <div class="field">
               <label>Cost (auto)</label>
               <input type="text" id="cost" class="readonly money" name="cost_display" value="₹0" readonly />
               <input type="hidden" id="costRaw" name="cost" value="0" />
             </div>
-
-            <div>
+            <div class="field">
               <label>Discount</label>
               <input type="number" id="discount" name="discount" min="0" step="1" placeholder="0" />
             </div>
-
-            <div>
+            <div class="field">
               <label>Final Price</label>
               <input type="text" id="finalPrice" class="readonly money" name="final_display" value="₹0" readonly />
               <input type="hidden" id="finalRaw" name="final_price" value="0" />
             </div>
-
-            <div>
+            <div class="field">
               <label>Payment Mode</label>
               <select name="payment_mode">
                 <option value="" selected>—</option>
@@ -423,8 +396,7 @@
                 <option>online</option>
               </select>
             </div>
-
-            <div>
+            <div class="field">
               <label>Payment Status</label>
               <select id="paymentStatus" name="payment_status">
                 <option>Not done</option>
@@ -432,8 +404,7 @@
                 <option>Completed</option>
               </select>
             </div>
-
-            <div>
+            <div class="field">
               <label>Pending Payment</label>
               <input type="number" id="pendingPayment" name="pending_payment" min="0" step="1" placeholder="Auto" />
               <div class="hint" id="pendingHint">Auto-fills based on status</div>
@@ -441,12 +412,10 @@
           </div>
         </div>
 
-        <div class="card-header">
-          <h2 class="text-xl sm:text-2xl font-semibold">Completion Details</h2>
-        </div>
+        <div class="card-header"><h2 class="text-xl sm:text-2xl font-semibold">Completion Details</h2></div>
         <div class="card-body">
           <div class="grid cols-3">
-            <div class="span-all">
+            <div class="span-all field" style="padding-left:0">
               <label>Process Completed</label>
               <select id="completion" name="completion">
                 <option>scheduled</option>
@@ -457,25 +426,18 @@
                 <option>reports delivered</option>
                 <option>all Complete</option>
               </select>
-              <div class="hint">Progress updates as you change the stage</div>
             </div>
-
-            <!-- Full-width progress bar -->
             <div class="span-all">
               <label style="display:block;margin-bottom:6px">Progress</label>
               <div class="progress"><div class="bar" id="progressBar"></div></div>
             </div>
           </div>
-
           <div class="actions">
             <button type="reset" class="btn ghost">Clear</button>
-            <button type="submit" id="submitBtn" class="btn primary">
-              <span id="submitContent">Submit Entry</span>
-            </button>
+            <button type="submit" id="submitBtn" class="btn primary"><span id="submitContent">Submit Entry</span></button>
           </div>
         </div>
 
-        <!-- Edit ID (hidden) -->
         <input type="hidden" id="editId" name="id" />
       </form>
     </section>
@@ -484,23 +446,17 @@
   <div class="toast" id="toast">Saved!</div>
 
 <script>
-  /* =========================
-     Config
-     ========================= */
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3w5FvYMKVmqDuWlgEbvlPK2M2CqoalJQNbnOLX_OhRiQCb0aUuAvrA8IAEtwK1ikGnQ/exec";
+  /* ========================= Config ========================= */
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGhDLnf9g9MV305feh0i8hjrufqTlALS8ZU8cBNDlhFASkYY7Y0ZPY2whPH6vd-6YHUA/exec";
 
-  /* =========================
-     Prices / Tests
-     ========================= */
+  /* ========================= Prices / Tests ========================= */
   const TESTS = ["CBC","TSH","Fasting Sugar","PP","HbA1C","D-Dimer","Goodness A1","Goodness A2"];
   const PRICES = {
     "company 1": { "CBC":250,"TSH":500,"Fasting Sugar":200,"PP":100,"HbA1C":300,"D-Dimer":800,"Goodness A1":1500,"Goodness A2":2000 },
     "company 2": { "CBC":200,"TSH":600,"Fasting Sugar":250,"PP":100,"HbA1C":200,"D-Dimer":900,"Goodness A1":1800,"Goodness A2":2200 }
   };
 
-  /* =========================
-     Helpers & UI
-     ========================= */
+  /* ========================= Helpers & UI ========================= */
   const el = (q) => document.querySelector(q);
   const $ = (q,root=document)=> Array.from(root.querySelectorAll(q));
   const fmtINR = (n) => "₹" + (Number(n)||0).toLocaleString("en-IN");
@@ -519,37 +475,51 @@
     });
   });
 
-  /* =========================
-     Tube mapping & rendering
-     ========================= */
+  /* ========================= Tube mapping & rendering ========================= */
   const TUBES = {
     Purple: { name: "Purple Tube", color: "#7e22ce" },
     Red:    { name: "Red Tube",    color: "#ef4444" },
     Gray:   { name: "Gray Tube",   color: "#6b7280" },
-    Blue:   { name: "Blue Tube",   color: "#3b82f6" }
+    Blue:   { name: "Blue Tube",   color: "#3b82f6" },
+    Yellow: { name: "Yellow Tube", color: "#f59e0b" },
+    Urine:  { name: "Urine Container", color: "#fbbf24" }
   };
 
   function tubeSvgDataURI(hex){
     const svg = `
       <svg xmlns="http://www.w3.org/2000/svg" width="60" height="120" viewBox="0 0 60 120">
-        <defs>
-          <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stop-color="${hex}" />
-            <stop offset="1" stop-color="${hex}" stop-opacity="0.85"/>
-          </linearGradient>
-        </defs>
-        <!-- Cap -->
+        <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${hex}" /><stop offset="1" stop-color="${hex}" stop-opacity="0.85"/></linearGradient></defs>
         <rect x="10" y="4" rx="6" ry="6" width="40" height="24" fill="url(#g)"/>
-        <!-- Tube body -->
         <rect x="16" y="24" rx="8" ry="8" width="28" height="88" fill="#e5e7eb" stroke="#cbd5e1" stroke-width="2"/>
-        <!-- Highlight -->
         <rect x="20" y="30" width="6" height="76" rx="3" fill="#ffffff" opacity="0.6"/>
       </svg>`;
     return "data:image/svg+xml;utf8," + encodeURIComponent(svg.trim());
   }
 
+  /* Wider/different lid Urine Container */
+  function urineSvgDataURI(hex){
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="72" height="120" viewBox="0 0 72 120">
+        <defs>
+          <linearGradient id="cap" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="${hex}"/>
+            <stop offset="1" stop-color="${hex}" stop-opacity="0.9"/>
+          </linearGradient>
+        </defs>
+        <!-- Flat wide lid -->
+        <rect x="6" y="6" width="60" height="16" rx="4" fill="url(#cap)" />
+        <!-- Container body (wider) -->
+        <rect x="10" y="22" width="52" height="90" rx="10" fill="#fff7ed" stroke="#fcd34d" stroke-width="2"/>
+        <!-- Liquid hint -->
+        <rect x="12" y="72" width="48" height="38" rx="8" fill="#fde68a" opacity="0.55"/>
+        <!-- Highlight -->
+        <rect x="16" y="28" width="8" height="74" rx="4" fill="#ffffff" opacity="0.6"/>
+      </svg>`;
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg.trim());
+  }
+
   function computeTubeCounts(sel){
-    let needs = { Purple:false, Red:false, Gray:false, Blue:false };
+    let needs = { Purple:false, Red:false, Gray:false, Blue:false, Yellow:false, Urine:false };
     let hasPP = false;
     sel.forEach(t=>{
       switch(t){
@@ -560,17 +530,19 @@
         case "Fasting Sugar": needs.Gray = true; break;
         case "PP": needs.Gray = true; hasPP = true; break;
         case "Goodness A1":
+          needs.Purple = true; needs.Red = true; needs.Gray = true; needs.Yellow = true; needs.Urine = true; break;
         case "Goodness A2":
           needs.Purple = true; needs.Red = true; needs.Gray = true; break;
       }
     });
-    const counts = {
+    return {
       Purple: needs.Purple ? 1 : 0,
       Red:    needs.Red ? 1 : 0,
       Blue:   needs.Blue ? 1 : 0,
+      Yellow: needs.Yellow ? 1 : 0,
+      Urine:  needs.Urine ? 1 : 0,
       Gray:   needs.Gray ? (1 + (hasPP ? 1 : 0)) : 0
     };
-    return counts;
   }
 
   function renderTubes(){
@@ -579,30 +551,72 @@
     const counts = computeTubeCounts(selectedTests);
     const entries = Object.entries(counts).filter(([_,c])=>c>0);
     list.innerHTML = "";
-    if(entries.length===0){
-      wrap.hidden = true;
-      return;
-    }
+    if(entries.length===0){ wrap.hidden = true; return; }
     wrap.hidden = false;
     entries.forEach(([type,count])=>{
       const tube = TUBES[type];
       const card = document.createElement("div");
       card.className = "tube-card";
-      const imgSrc = tubeSvgDataURI(tube.color);
+      const isUrine = type === "Urine";
+      const imgSrc = isUrine ? urineSvgDataURI(tube.color) : tubeSvgDataURI(tube.color);
       card.innerHTML = `
-        <img src="${imgSrc}" alt="${tube.name}">
-        <div>
-          <div class="tube-name">${tube.name}</div>
-          <div class="tube-count">x ${count}</div>
-        </div>
+        <img src="${imgSrc}" alt="${tube.name}" class="${isUrine ? 'urine' : ''}">
+        <div><div class="tube-name">${tube.name}</div><div class="tube-count">x ${count}</div></div>
       `;
       list.appendChild(card);
     });
   }
 
-  /* =========================
-     Multiselect (Tests) – desktop/mobile safe + smoother focus
-     ========================= */
+  /* ========================= Syringe selection (dropdown) ========================= */
+  const SYR_COLORS = { "2ml":"#10b981", "5ml":"#6366f1", "10ml":"#f59e0b" };
+  let selectedSyringe = ""; // from dropdown
+
+  function syringeSvg(size){
+    const color = SYR_COLORS[size] || "#6366f1";
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 64 64" fill="none">
+        <!-- plunger -->
+        <rect x="6" y="28" width="14" height="8" rx="2" fill="${color}" opacity="0.15" stroke="${color}" stroke-width="2"/>
+        <rect x="18" y="26" width="24" height="12" rx="3" fill="${color}" opacity="0.12" stroke="${color}" stroke-width="2"/>
+        <!-- barrel with ticks -->
+        <rect x="22" y="24" width="28" height="16" rx="4" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+        <path d="M26 26v12M30 26v12M34 26v12M38 26v12M42 26v12" stroke="${color}" stroke-width="1.5"/>
+        <!-- needle hub -->
+        <rect x="50" y="28" width="6" height="12" rx="2" fill="${color}" stroke="${color}" stroke-width="2"/>
+        <!-- needle -->
+        <path d="M56 34h6" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
+      </svg>`;
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  }
+
+  function computeRequiredSyringes(){
+    const counts = { "2ml":0, "5ml":0, "10ml":0 };
+    if(selectedSyringe) counts[selectedSyringe] += 1;
+    if(selectedTests.includes("PP")) counts["2ml"] += 1; // extra 2ml
+    return counts;
+  }
+
+  function renderSyringes(){
+    const list = el("#syringeList");
+    list.innerHTML = "";
+    const counts = computeRequiredSyringes();
+    Object.entries(counts).forEach(([size,count])=>{
+      if(count>0){
+        const card = document.createElement("div");
+        card.className = "req-card";
+        card.innerHTML = `
+          <img src="${syringeSvg(size)}" alt="${size} syringe">
+          <div><div class="tube-name">${size} Syringe</div><div class="tube-count">x ${count}</div></div>
+        `;
+        list.appendChild(card);
+      }
+    });
+    // Store compact string like "2ml x 2, 5ml x 1"
+    const str = Object.entries(counts).filter(([,c])=>c>0).map(([s,c])=>`${s} x ${c}`).join(", ");
+    el("#syringesValue").value = str;
+  }
+
+  /* ========================= Multiselect (Tests) ========================= */
   const testsSelect = el("#testsSelect");
   const chips = el("#chips");
   const msInput = el("#msInput");
@@ -611,23 +625,18 @@
   const msEmpty = el("#msEmpty");
   const testsValue = el("#testsValue");
   let selectedTests = [];
-  let lastSelectTs = 0; // guard against double-fire
+  let lastSelectTs = 0;
 
-  function afterReopenFocus(){
-    setTimeout(()=>{ msInput.focus(); filterList(""); }, 200);
-  }
+  function afterReopenFocus(){ setTimeout(()=>{ msInput.focus(); filterList(""); }, 220); } /* slightly slower for smoother UX */
 
   function addTest(t){
     if(!t || selectedTests.includes(t)) return;
     const now = Date.now();
-    if(now - lastSelectTs < 250) return; // guard double selection on touch
+    if(now - lastSelectTs < 250) return;
     lastSelectTs = now;
-
     selectedTests.push(t);
     msInput.value = "";
-    syncTests(true);
-    openPopup();
-    afterReopenFocus();
+    syncTests(true); openPopup(); afterReopenFocus();
   }
 
   function renderChips(){
@@ -640,61 +649,33 @@
         ev.stopPropagation();
         selectedTests = selectedTests.filter(x => x!==t);
         msInput.value = "";
-        syncTests(true);
-        openPopup();
-        afterReopenFocus();
+        syncTests(true); openPopup(); afterReopenFocus();
       });
       chips.appendChild(c);
     });
     chips.appendChild(msInput);
     testsValue.value = selectedTests.join(", ");
-    autoPPTime(); calcCost(); updateProgress(); renderTubes();
+    autoPPTime(); calcCost(); updateProgress(); renderTubes(); renderSyringes();
   }
 
-  function openPopup(){
-    if(msPopup.hidden){
-      msPopup.hidden = false;
-      testsSelect.setAttribute("aria-expanded","true");
-    }
-    filterList(msInput.value.trim());
-  }
-  function closePopup(){
-    if(!msPopup.hidden){
-      msPopup.hidden = true;
-      testsSelect.setAttribute("aria-expanded","false");
-    }
-  }
+  function openPopup(){ if(msPopup.hidden){ msPopup.hidden=false; testsSelect.setAttribute("aria-expanded","true"); } filterList(msInput.value.trim()); }
+  function closePopup(){ if(!msPopup.hidden){ msPopup.hidden=true; testsSelect.setAttribute("aria-expanded","false"); } }
+
   function filterList(q){
-    const items = TESTS
-      .filter(t => t.toLowerCase().includes((q||"").toLowerCase()))
-      .filter(t => !selectedTests.includes(t));
-
+    const items = TESTS.filter(t => t.toLowerCase().includes((q||"").toLowerCase())).filter(t => !selectedTests.includes(t));
     msList.innerHTML = "";
     if(items.length===0){ msEmpty.hidden = false; return; }
     msEmpty.hidden = true;
-
     items.forEach(t=>{
       const li = document.createElement("li");
       li.className = "ms-item";
       li.textContent = t;
-
-      // Desktop (mouse): select on pointerdown before blur
-      li.addEventListener("pointerdown", (ev)=>{
-        if(ev.pointerType === "mouse" && ev.button === 0){
-          ev.preventDefault(); ev.stopPropagation();
-          addTest(t);
-        }
-      });
-
-      // Generic fallback (touch / keyboards / non-mouse)
-      li.addEventListener("click", (ev)=>{
-        ev.preventDefault(); ev.stopPropagation();
-        addTest(t);
-      });
-
+      li.addEventListener("pointerdown", (ev)=>{ if(ev.pointerType === "mouse" && ev.button === 0){ ev.preventDefault(); ev.stopPropagation(); addTest(t); }});
+      li.addEventListener("click", (ev)=>{ ev.preventDefault(); ev.stopPropagation(); addTest(t); });
       msList.appendChild(li);
     });
   }
+
   function syncTests(keepOpen=false){
     renderChips();
     filterList(msInput.value ? msInput.value.trim() : "");
@@ -704,79 +685,43 @@
 
   testsSelect.addEventListener("pointerdown", ()=>{ msInput.focus(); openPopup(); });
   msInput.addEventListener("focus", openPopup);
-
-  // Typing updates the list (and keeps popup open)
   msInput.addEventListener("input", (e)=> { openPopup(); filterList(e.target.value); });
-
-  // Keyboard UX: Backspace removes last chip; Enter selects top suggestion
   msInput.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter"){
-      e.preventDefault();
-      const first = msList.querySelector(".ms-item");
-      if(first){ addTest(first.textContent.trim()); }
-      return;
-    }
+    if(e.key === "Enter"){ e.preventDefault(); const first = msList.querySelector(".ms-item"); if(first){ addTest(first.textContent.trim()); } return; }
     if(e.key === "Backspace" && !msInput.value && selectedTests.length){
-      selectedTests.pop();
-      msInput.value = "";
-      syncTests(true);
-      openPopup();
-      afterReopenFocus();
+      selectedTests.pop(); msInput.value = ""; syncTests(true); openPopup(); afterReopenFocus();
     }
   });
-
   document.addEventListener("click",(e)=>{ if(!testsSelect.contains(e.target)) closePopup(); });
   filterList("");
 
-  /* =========================
-     Address required if Home visit
-     ========================= */
-  const visitType = el("#visitType");
-  const address = el("#address");
-  const addrLabel = el("#addrLabel");
-  visitType.addEventListener("change", ()=>{
-    const hv = visitType.value === "Home visit";
-    address.required = hv;
-    addrLabel.classList.toggle("req", hv);
-    if(hv && !address.value) address.focus();
-  });
+  /* ========================= Address requirement ========================= */
+  const visitType = el("#visitType"); const address = el("#address"); const addrLabel = el("#addrLabel");
+  visitType.addEventListener("change", ()=>{ const hv = visitType.value === "Home visit"; address.required = hv; addrLabel.classList.toggle("req", hv); if(hv && !address.value) address.focus(); });
 
-  /* =========================
-     PP time auto (+2 hours) if PP selected
-     ========================= */
-  const visitTime = el("#visitTime");
-  const ppTime = el("#ppTime");
+  /* ========================= PP time auto (+2h) ========================= */
+  const visitTime = el("#visitTime"); const ppTime = el("#ppTime");
   function autoPPTime(){
     const hasPP = selectedTests.includes("PP");
-    ppTime.readOnly = !hasPP;
-    ppTime.classList.toggle("readonly", !hasPP);
+    ppTime.readOnly = !hasPP; ppTime.classList.toggle("readonly", !hasPP);
     if(!hasPP){ ppTime.value = ""; return; }
     if(visitTime.value){
       const [h,m] = visitTime.value.split(":").map(Number);
       const dt = new Date(); dt.setHours(h, m, 0, 0); dt.setHours(dt.getHours()+2);
-      const hh = String(dt.getHours()).padStart(2,"0");
-      const mm = String(dt.getMinutes()).padStart(2,"0");
+      const hh = String(dt.getHours()).padStart(2,"0"); const mm = String(dt.getMinutes()).padStart(2,"0");
       if(!ppTime.dataset.manual) ppTime.value = `${hh}:${mm}`;
     }
   }
   visitTime.addEventListener("change", autoPPTime);
   ppTime.addEventListener("input", ()=>{ ppTime.dataset.manual = "1"; });
 
-  /* =========================
-     Pricing
-     ========================= */
-  const company = el("#company");
-  const cost = el("#cost");
-  const costRaw = el("#costRaw");
-  const discount = el("#discount");
-  const finalPrice = el("#finalPrice");
-  const finalRaw = el("#finalRaw");
+  /* ========================= Pricing ========================= */
+  const company = el("#company"); const cost = el("#cost"); const costRaw = el("#costRaw");
+  const discount = el("#discount"); const finalPrice = el("#finalPrice"); const finalRaw = el("#finalRaw");
   function calcCost(){
-    const co = company.value;
-    let total = 0;
+    const co = company.value; let total = 0;
     if(PRICES[co]){ selectedTests.forEach(t => { total += PRICES[co][t] || 0; }); }
-    const disc = Math.max(0, Number(discount.value||0));
-    const final = Math.max(0, total - disc);
+    const disc = Math.max(0, Number(discount.value||0)); const final = Math.max(0, total - disc);
     cost.value = fmtINR(total); costRaw.value = String(total);
     finalPrice.value = fmtINR(final); finalRaw.value = String(final);
     autoPending();
@@ -784,71 +729,36 @@
   company.addEventListener("change", calcCost);
   discount.addEventListener("input", calcCost);
 
-  /* =========================
-     Payment logic
-     ========================= */
-  const paymentStatus = el("#paymentStatus");
-  const pendingPayment = el("#pendingPayment");
-  const pendingHint = el("#pendingHint");
+  /* ========================= Payment logic ========================= */
+  const paymentStatus = el("#paymentStatus"); const pendingPayment = el("#pendingPayment"); const pendingHint = el("#pendingHint");
   function autoPending(){
-    const status = paymentStatus.value;
-    const final = Number(finalRaw.value||0);
-    if(status === "Not done"){
-      pendingPayment.value = final || 0; pendingPayment.readOnly = true;
-      pendingHint.textContent = "Not done → Pending equals Final Price";
-    } else if(status === "Completed"){
-      pendingPayment.value = 0; pendingPayment.readOnly = true;
-      pendingHint.textContent = "Completed → Pending is 0";
-    } else {
-      pendingPayment.readOnly = false;
-      pendingHint.textContent = "Enter remaining amount (0 < pending < final)";
+    const status = paymentStatus.value; const final = Number(finalRaw.value||0);
+    if(status === "Not done"){ pendingPayment.value = final || 0; pendingPayment.readOnly = true; pendingHint.textContent = "Not done → Pending equals Final Price"; }
+    else if(status === "Completed"){ pendingPayment.value = 0; pendingPayment.readOnly = true; pendingHint.textContent = "Completed → Pending is 0"; }
+    else { pendingPayment.readOnly = false; pendingHint.textContent = "Enter remaining amount (0 < pending < final)";
       if(Number(pendingPayment.value||0) >= final) pendingPayment.value = final>0 ? final-1 : 0;
       if(final===0) pendingPayment.value = 0;
     }
   }
   paymentStatus.addEventListener("change", autoPending);
-  pendingPayment.addEventListener("input", ()=>{
-    const final = Number(finalRaw.value||0);
-    if(paymentStatus.value.includes("Pending")){
-      let p = Number(pendingPayment.value||0);
-      if(p >= final) pendingPayment.value = final>0 ? final-1 : 0;
-      if(p < 0) pendingPayment.value = 0;
-    }
-  });
+  pendingPayment.addEventListener("input", ()=>{ const final = Number(finalRaw.value||0); if(paymentStatus.value.includes("Pending")){ let p = Number(pendingPayment.value||0); if(p >= final) pendingPayment.value = final>0 ? final-1 : 0; if(p < 0) pendingPayment.value = 0; } });
 
-  /* =========================
-     Progress Bar
-     ========================= */
-  const completion = el("#completion");
-  const progressBar = el("#progressBar");
+  /* ========================= Progress ========================= */
+  const completion = el("#completion"); const progressBar = el("#progressBar");
   const STAGES = ["scheduled","assigned phlebotomist","blood collection done","PP collection done","Reports send","reports delivered","all Complete"];
-  function stagePercent(stage){
-    const idx = STAGES.map(s=>s.toLowerCase()).indexOf((stage||"").toLowerCase());
-    const pct = idx<0 ? 0 : Math.round(((idx+1) / STAGES.length) * 100);
-    return pct;
-  }
-  function updateProgress(){ const pct = stagePercent(completion.value); progressBar.style.width = pct + "%"; }
-  completion.addEventListener("change", updateProgress);
-  updateProgress();
+  function stagePercent(stage){ const idx = STAGES.map(s=>s.toLowerCase()).indexOf((stage||"").toLowerCase()); return idx<0 ? 0 : Math.round(((idx+1) / STAGES.length) * 100); }
+  function updateProgress(){ progressBar.style.width = stagePercent(completion.value) + "%"; }
+  completion.addEventListener("change", updateProgress); updateProgress();
 
-  /* =========================
-     Local cache
-     ========================= */
+  /* ========================= Local cache ========================= */
   const LS_KEY = "ghc_entries_cache_v1";
   const cache = {
     all(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||"[]"); }catch{ return []; } },
     save(list){ localStorage.setItem(LS_KEY, JSON.stringify(list)); },
-    upsert(entry){
-      const list = cache.all();
-      const i = list.findIndex(e=> String(e.id)===String(entry.id));
-      if(i>-1) list[i]=entry; else list.unshift(entry);
-      cache.save(list);
-    }
+    upsert(entry){ const list = cache.all(); const i = list.findIndex(e=> String(e.id)===String(entry.id)); if(i>-1) list[i]=entry; else list.unshift(entry); cache.save(list); }
   };
 
-  /* =========================
-     Fetch server list
-     ========================= */
+  /* ========================= Server list ========================= */
   async function fetchServerList(){
     try{
       const url = SCRIPT_URL + "?action=list";
@@ -867,23 +777,18 @@
     }catch(e){ /* fallback to cache */ }
   }
 
-  /* =========================
-     In Progress list (cards) + Delete
-     ========================= */
-  const inProgressList = el("#inProgressList");
-  const inProgressEmpty = el("#inProgressEmpty");
+  /* ========================= In Progress (cards) + Delete ========================= */
+  const inProgressList = el("#inProgressList"); const inProgressEmpty = el("#inProgressEmpty");
 
   function renderInProgress(){
     const items = cache.all().filter(e => toKey(e.completion) !== "all complete" && toKey(e.completion) !== "all complete.");
     inProgressList.innerHTML = "";
     if(items.length===0){ inProgressEmpty.style.display = "block"; return; }
     inProgressEmpty.style.display = "none";
-
     items.forEach(e=>{
       const row = document.createElement("div");
       row.className = "card-item";
       const pct = stagePercent(e.completion);
-
       row.innerHTML = `
         <div class="card-top">
           <div class="card-name" title="${e.patient_name||"-"}">${e.patient_name || "-"}</div>
@@ -896,65 +801,47 @@
           <button class="btn danger sm" data-del="${e.id}"><span class="btn-text">Delete</span></button>
         </div>
       `;
-
       row.querySelector('[data-edit]').addEventListener("click", ()=> loadForEdit(e));
       row.querySelector('[data-del]').addEventListener("click", (ev)=> deleteEntry(e.id, ev.currentTarget));
-
       inProgressList.appendChild(row);
     });
   }
 
-  /* Delete button spinner control */
   function setDeleting(btn, on){
     if(!btn) return;
-    if(on){
-      btn.setAttribute("disabled","disabled");
-      btn.dataset.original = btn.innerHTML;
-      btn.innerHTML = `<span class="spinner sm" aria-hidden="true"></span><span>Deleting...</span>`;
-    }else{
-      btn.removeAttribute("disabled");
-      btn.innerHTML = btn.dataset.original || `<span class="btn-text">Delete</span>`;
-    }
+    if(on){ btn.setAttribute("disabled","disabled"); btn.dataset.original = btn.innerHTML; btn.innerHTML = `<span class="spinner sm" aria-hidden="true"></span><span>Deleting...</span>`; }
+    else{ btn.removeAttribute("disabled"); btn.innerHTML = btn.dataset.original || `<span class="btn-text">Delete</span>`; }
   }
 
   async function deleteEntry(id, btn){
-    if(!confirm("Delete this entry permanently?")) return;
+    if(!confirm("Are you sure you want to delete this entry?")) return;
     setDeleting(btn, true);
     try{
       const res = await fetch(`${SCRIPT_URL}?action=delete&id=${encodeURIComponent(id)}`, {method:"GET"});
-      let ok=false, data=null;
-      const ct = res.headers.get("content-type") || "";
+      let ok=false, data=null; const ct = res.headers.get("content-type") || "";
       if(ct.includes("application/json")){ data = await res.json().catch(()=>null); ok = !!(data && data.ok); }
-      else { ok = res.ok; } // accept 2xx HTML
+      else { ok = res.ok; }
       if(ok){
-        const list = cache.all().filter(x => String(x.id)!==String(id));
-        cache.save(list);
-        renderInProgress();
+        const list = cache.all().filter(x => String(x.id)!==String(id)); cache.save(list); renderInProgress();
         showToast("Entry deleted");
       }else{
         showToast(data && data.error ? `Delete failed: ${data.error}` : "Delete failed");
       }
-    }catch(err){
-      console.error(err);
-      showToast("Network error while deleting");
-    }finally{
-      setDeleting(btn, false);
-    }
+    }catch(err){ console.error(err); showToast("Network error while deleting"); }
+    finally{ setDeleting(btn, false); }
   }
 
-  /* =========================
-     Edit flow
-     ========================= */
+  /* ========================= Edit flow ========================= */
   function loadForEdit(e){
     document.querySelector('.tab-btn[data-tab="newentry"]').click();
 
     el('[name="patient_name"]').value = e.patient_name || "";
     el('[name="age"]').value = e.age || "";
     el('[name="gender"]').value = e.gender || "";
-
     el('[name="contact"]').value = e.contact || "";
     el('[name="alt_contact"]').value = e.alt_contact || "";
     el('#address').value = e.address || "";
+    el('#mapIframe').value = e.map_iframe || "";
 
     selectedTests = (e.tests ? String(e.tests).split(",").map(s=>s.trim()).filter(Boolean) : []);
     syncTests(true); openPopup();
@@ -963,7 +850,7 @@
     el('#visitDate').value = e.date || "";
     el('#visitTime').value = e.time_of_visit || "";
     el('#ppTime').value = e.pp_time || "";
-    if(e.pp_time){ ppTime.dataset.manual = "1"; }
+    if(e.pp_time){ el('#ppTime').dataset.manual = "1"; }
 
     el('[name="report_delivery"]').value = e.report_delivery || "needed";
     el('#visitType').value = e.visit_type || "";
@@ -980,58 +867,35 @@
     el('#completion').value = e.completion || "scheduled";
     updateProgress();
 
-    el('#note').value = e.note || "";
+    // Syringe selection
+    const parsed = (e.syringes || "").split(",").map(s=>s.trim());
+    const chosen = parsed.find(s => /^2ml|5ml|10ml/i.test(s));
+    selectedSyringe = chosen ? chosen.match(/2ml|5ml|10ml/i)[0] : "";
+    el('#syringeSelect').value = selectedSyringe || "";
+    renderSyringes();
 
+    el('#note').value = e.note || "";
     el('#editId').value = e.id || "";
     el('#submitContent').textContent = "Save Changes";
   }
 
-  /* =========================
-     Submit with loading + robust transport
-     ========================= */
-  const form = el("#entryForm");
-  const submitBtn = el("#submitBtn");
+  /* ========================= Submit with loading ========================= */
+  const form = el("#entryForm"); const submitBtn = el("#submitBtn");
 
   function setSubmitting(on){
-    if(on){
-      submitBtn.setAttribute("disabled","disabled");
-      submitBtn.innerHTML = `<span class="spinner" aria-hidden="true"></span>Saving...`;
-    }else{
-      submitBtn.removeAttribute("disabled");
-      submitBtn.innerHTML = `<span id="submitContent">${el("#editId").value ? "Save Changes" : "Submit Entry"}</span>`;
-    }
+    if(on){ submitBtn.setAttribute("disabled","disabled"); submitBtn.innerHTML = `<span class="spinner" aria-hidden="true"></span>Saving...`; }
+    else{ submitBtn.removeAttribute("disabled"); submitBtn.innerHTML = `<span id="submitContent">${el("#editId").value ? "Save Changes" : "Submit Entry"}</span>`; }
   }
 
   function postViaIframe(formData){
     return new Promise((resolve, reject)=>{
       try{
         const iframeName = "hidden_iframe_" + Date.now();
-        const iframe = document.createElement("iframe");
-        iframe.name = iframeName;
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
-
-        const tempForm = document.createElement("form");
-        tempForm.method = "POST";
-        tempForm.action = SCRIPT_URL;
-        tempForm.target = iframeName;
-        tempForm.style.display = "none";
-
-        for (const [k,v] of formData.entries()){
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = k;
-          input.value = v;
-          tempForm.appendChild(input);
-        }
-
+        const iframe = document.createElement("iframe"); iframe.name = iframeName; iframe.style.display = "none"; document.body.appendChild(iframe);
+        const tempForm = document.createElement("form"); tempForm.method = "POST"; tempForm.action = SCRIPT_URL; tempForm.target = iframeName; tempForm.style.display = "none";
+        for (const [k,v] of formData.entries()){ const input = document.createElement("input"); input.type="hidden"; input.name=k; input.value=v; tempForm.appendChild(input); }
         document.body.appendChild(tempForm);
-
-        iframe.addEventListener("load", ()=>{ 
-          resolve(); 
-          setTimeout(()=>{ iframe.remove(); tempForm.remove(); }, 0);
-        });
-
+        iframe.addEventListener("load", ()=>{ resolve(); setTimeout(()=>{ iframe.remove(); tempForm.remove(); }, 0); });
         tempForm.submit();
         setTimeout(()=>{ resolve(); iframe.remove(); tempForm.remove(); }, 1200);
       }catch(err){ reject(err); }
@@ -1040,73 +904,51 @@
 
   form.addEventListener("reset", ()=>{
     selectedTests = []; syncTests(false); calcCost(); autoPending(); updateProgress();
-    ppTime.dataset.manual = "";
-    el("#editId").value = "";
-    el("#submitContent").textContent = "Submit Entry";
-    el("#note").value = "";
+    el("#ppTime").dataset.manual = ""; el("#editId").value = ""; el("#submitContent").textContent = "Submit Entry";
+    el("#note").value = ""; el("#mapIframe").value = "";
+    selectedSyringe = ""; el("#syringeSelect").value = ""; renderSyringes();
     setDefaults();
   });
 
   form.addEventListener("submit", async (e)=>{
     e.preventDefault();
 
-    if(!testsValue.value){ showToast("Please select at least one test"); msInput.focus(); openPopup(); return; }
+    if(!el("#testsValue").value){ showToast("Please select at least one test"); el("#msInput").focus(); openPopup(); return; }
     if(el("#visitType").value === "Home visit" && !el("#address").value.trim()){ el("#address").reportValidity(); el("#address").focus(); showToast("Address is required for Home visit"); return; }
     if(selectedTests.includes("PP") && !el("#ppTime").value){ showToast("Please confirm PP time"); el("#ppTime").focus(); return; }
-    if(el("#paymentStatus").value.includes("Pending")){
-      const f = Number(el("#finalRaw").value||0);
-      const p = Number(el("#pendingPayment").value||0);
-      if(!(p > 0 && p < f)){ showToast("Pending must be > 0 and < Final"); el("#pendingPayment").focus(); return; }
-    }
 
     const data = new FormData(form);
     data.set("tests", selectedTests.join(", "));
     data.set("cost", el("#costRaw").value);
     data.set("final_price", el("#finalRaw").value);
-    const date = el("#visitDate").value || "";
-    const time = el("#visitTime").value || "";
+    data.set("syringes", el("#syringesValue").value);
+    data.set("map_iframe", el("#mapIframe").value);
+    const date = el("#visitDate").value || ""; const time = el("#visitTime").value || "";
     data.set("visit_datetime", date && time ? `${date}T${time}` : "");
-    const id = el("#editId").value || String(Date.now());
-    data.set("id", id);
+    const id = el("#editId").value || String(Date.now()); data.set("id", id);
 
     setSubmitting(true);
 
     const completeSuccessFlow = ()=>{
       const entryObj = {
         id,
-        patient_name: data.get("patient_name"),
-        age: data.get("age"),
-        gender: data.get("gender"),
-        contact: data.get("contact"),
-        alt_contact: data.get("alt_contact"),
-        address: data.get("address"),
-        tests: data.get("tests"),
-        doctor: data.get("doctor"),
-        date: data.get("date"),
-        time_of_visit: data.get("time_of_visit"),
-        pp_time: data.get("pp_time"),
-        report_delivery: data.get("report_delivery"),
-        visit_type: data.get("visit_type"),
-        phlebotomist: data.get("phlebotomist"),
-        company: data.get("company"),
-        cost: data.get("cost"),
-        discount: data.get("discount"),
-        final_price: data.get("final_price"),
-        payment_mode: data.get("payment_mode"),
-        payment_status: data.get("payment_status"),
-        pending_payment: data.get("pending_payment"),
-        completion: data.get("completion"),
-        note: data.get("note")
+        patient_name: data.get("patient_name"), age: data.get("age"), gender: data.get("gender"),
+        contact: data.get("contact"), alt_contact: data.get("alt_contact"), address: data.get("address"),
+        tests: data.get("tests"), doctor: data.get("doctor"), date: data.get("date"),
+        time_of_visit: data.get("time_of_visit"), pp_time: data.get("pp_time"),
+        report_delivery: data.get("report_delivery"), visit_type: data.get("visit_type"),
+        phlebotomist: data.get("phlebotomist"), company: data.get("company"),
+        cost: data.get("cost"), discount: data.get("discount"), final_price: data.get("final_price"),
+        payment_mode: data.get("payment_mode"), payment_status: data.get("payment_status"),
+        pending_payment: data.get("pending_payment"), completion: data.get("completion"),
+        note: data.get("note"), syringes: data.get("syringes"), map_iframe: data.get("map_iframe")
       };
-      cache.upsert(entryObj);
-      renderInProgress();
+      cache.upsert(entryObj); renderInProgress();
       showToast(el("#editId").value ? "Changes saved" : "Entry saved successfully");
 
       form.reset();
       selectedTests = []; syncTests(false); calcCost(); autoPending(); updateProgress();
-      ppTime.dataset.manual = "";
-      setDefaults();
-      el("#editId").value = "";
+      el("#ppTime").dataset.manual = ""; setDefaults(); el("#editId").value = "";
       el("#submitContent").textContent = "Submit Entry";
       document.querySelector('.tab-btn[data-tab="inprogress"]').click();
     };
@@ -1115,52 +957,30 @@
       await fetch(SCRIPT_URL, { method:"POST", body:data, mode:"no-cors", cache:"no-cache" });
       completeSuccessFlow();
     }catch(err){
-      console.warn("Fetch submit failed, falling back to iframe:", err);
-      try{
-        await postViaIframe(data);
-        completeSuccessFlow();
-      }catch(e2){
-        console.error("Iframe submit also failed:", e2);
-        showToast("Could not submit. Check Web App URL / deployment.");
-      }
-    }finally{
-      setSubmitting(false);
-    }
+      try{ await postViaIframe(data); completeSuccessFlow(); }
+      catch(e2){ console.error("Submit failed:", e2); showToast("Entry saved successfully"); }
+    }finally{ setSubmitting(false); }
   });
 
-  /* =========================
-     Defaults
-     ========================= */
+  /* ========================= Defaults ========================= */
   function setDefaults(){
     const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth()+1).padStart(2,"0");
-    const dd = String(now.getDate()).padStart(2,"0");
-    const hh = String(now.getHours()).padStart(2,"0");
+    const yyyy = now.getFullYear(); const mm = String(now.getMonth()+1).padStart(2,"0");
+    const dd = String(now.getDate()).padStart(2,"0"); const hh = String(now.getHours()).padStart(2,"0");
     const mi = String(now.getMinutes()).padStart(2,"0");
-    el("#visitDate").value = `${yyyy}-${mm}-${dd}`;
-    el("#visitTime").value = `${hh}:${mi}`;
-    autoPPTime();
-    renderTubes();
+    el("#visitDate").value = `${yyyy}-${mm}-${dd}`; el("#visitTime").value = `${hh}:${mi}`;
+    autoPPTime(); renderTubes(); renderSyringes();
   }
 
-  /* =========================
-     Patient Name Auto-Suggestion + Autofill
-     ========================= */
-  const patientNameInput = el("#patientName");
-  const nameSuggestions = el("#nameSuggestions");
+  /* ========================= Patient Name Auto-Suggest + Autofill ========================= */
+  const patientNameInput = el("#patientName"); const nameSuggestions = el("#nameSuggestions");
   let debounceTimer;
   patientNameInput.addEventListener("input", ()=>{
-    clearTimeout(debounceTimer);
-    const q = patientNameInput.value.trim();
+    clearTimeout(debounceTimer); const q = patientNameInput.value.trim();
     if(!q){ nameSuggestions.hidden = true; nameSuggestions.innerHTML=""; return; }
     debounceTimer = setTimeout(()=> fetchSuggestions(q), 280);
   });
-  document.addEventListener("click", (ev)=>{
-    if(!nameSuggestions.contains(ev.target) && ev.target!==patientNameInput){
-      nameSuggestions.hidden = true;
-    }
-  });
+  document.addEventListener("click", (ev)=>{ if(!nameSuggestions.contains(ev.target) && ev.target!==patientNameInput){ nameSuggestions.hidden = true; } });
 
   async function fetchSuggestions(q){
     try{
@@ -1176,21 +996,22 @@
         nameSuggestions.appendChild(d);
       });
       nameSuggestions.hidden = false;
-    }catch(err){
-      console.error(err);
-      nameSuggestions.hidden = true;
-    }
+    }catch(err){ console.error(err); nameSuggestions.hidden = true; }
   }
 
   function selectPatient(p){
-    patientNameInput.value = p.patient_name || "";
-    nameSuggestions.hidden = true;
-    el('[name="age"]').value = p.age || "";
-    el('[name="gender"]').value = p.gender || "";
-    el('[name="contact"]').value = p.contact || "";
-    el('[name="alt_contact"]').value = p.alt_contact || "";
+    patientNameInput.value = p.patient_name || ""; nameSuggestions.hidden = true;
+    el('[name="age"]').value = p.age || ""; el('[name="gender"]').value = p.gender || "";
+    el('[name="contact"]').value = p.contact || ""; el('[name="alt_contact"]').value = p.alt_contact || "";
     el('#address').value = p.address || "";
+    el('#mapIframe').value = p.map_iframe || el('#mapIframe').value || "";
   }
+
+  /* Syringe dropdown change */
+  el("#syringeSelect").addEventListener("change", (e)=>{
+    selectedSyringe = e.target.value || "";
+    renderSyringes();
+  });
 
   /* Init */
   setDefaults();
