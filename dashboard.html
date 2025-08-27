@@ -89,76 +89,106 @@
           </button>
         </div>
 
-        <!-- Nav -->
+        <!-- Nav (use data-roles and/or data-allow-users for gating) -->
         <nav id="sideNav" class="space-y-1 text-base">
-          <a href="login.html" data-target="login.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white" data-roles="admin,staff">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🔐</span>
-            <span>Login Info</span>
-          </a>
-
-          <a href="home.html" data-target="home.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white" data-roles="admin,staff">
+          <a href="home.html" data-target="home.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏠</span>
             <span>Dashboard</span>
           </a>
 
-          <a href="entry.html" data-target="entry.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2" data-roles="admin,staff">
+          <a href="entry.html" data-target="entry.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2"
+             data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100">➕</span>
             <span>Add Entry</span>
           </a>
 
-          <a href="schedule.html" data-target="schedule.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="schedule.html" data-target="schedule.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🗓️</span>
             <span>Schedule</span>
           </a>
 
-          <a href="payment.html" data-target="payment.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="payment.html" data-target="payment.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">💳</span>
             <span>Payment</span>
           </a>
 
-          <a href="reports.html" data-target="reports.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="reports.html" data-target="reports.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📄</span>
             <span>Reports</span>
           </a>
 
-          <a href="inventory.html" data-target="inventory.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+          <!-- Admin-only (by role) -->
+          <a href="inventory.html" data-target="inventory.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📦</span>
             <span>Inventory</span>
           </a>
 
-          <a href="medical-camp.html" data-target="medical-camp.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">⛺</span>
-            <span>Medical Camp</span>
-          </a>
-
-          <a href="database.html" data-target="database.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+          <a href="database.html" data-target="database.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin" data-allow-users="kaushal">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🗄️</span>
             <span>Database</span>
           </a>
 
-          <a href="test-prices.html" data-target="test-prices.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="test-prices.html" data-target="test-prices.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🏷️</span>
             <span>Test Prices</span>
           </a>
 
-          <a href="staff.html" data-target="staff.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin">
+          <a href="staff.html" data-target="staff.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin" data-allow-users="kaushal,manager1">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">👥</span>
             <span>Staff</span>
           </a>
 
-          <a href="analytics.html" data-target="analytics.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="analytics.html" data-target="analytics.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">📊</span>
             <span>Analytics</span>
           </a>
 
-          <a href="ai-assistant.html" data-target="ai-assistant.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="ai-assistant.html" data-target="ai-assistant.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🤖</span>
             <span>AI Assistant</span>
           </a>
 
-          <a href="about.html" data-target="about.html" class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200" data-roles="admin,staff">
+          <a href="medical-camp.html" data-target="medical-camp.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin,staff">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">⛺</span>
+            <span>Medical Camp</span>
+          </a>
+
+          <a href="about.html" data-target="about.html"
+             class="nav-link group flex items-center gap-3 rounded-lg px-3 py-2 lift transition-basic hover:bg-white hover:ring-1 hover:ring-brand-200"
+             data-roles="admin,staff">
             <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">ℹ️</span>
             <span>About Us</span>
+          </a>
+
+          <!-- Login page link kept but hidden from staff by username example -->
+          <a href="login.html" data-target="login.html"
+             class="nav-link hidden group items-center gap-3 rounded-lg px-3 py-2 lift transition-basic ring-1 ring-transparent hover:ring-brand-200 hover:bg-white"
+             data-roles="admin" data-allow-users="kaushal">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 group-hover:bg-brand-100">🔐</span>
+            <span>Login Info</span>
           </a>
         </nav>
       </aside>
@@ -175,12 +205,26 @@
   <!-- Mobile overlay to close sidebar when open -->
   <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden opacity-0 pointer-events-none transition-opacity"></div>
 
-  <!-- Firebase v10 (Modular, CDN) + Auth Guard + Role-based visibility -->
+  <!-- Firebase v10 (Modular, CDN) + Auth + Username/Role Directory -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // ========= SIMPLE USER DIRECTORY (edit this) =========
+    // Map each email to a username and roles.
+    // - email: must match Firebase auth email (case-insensitive).
+    // - username: shown in UI; also synced to Firebase displayName.
+    // - roles: used by data-roles gating (comma-separated on elements).
+    const USER_DIRECTORY = {
+      "kaushalachrekar@gmail.com": { username: "Kaushal", roles: ["admin","staff"] },
+      "kaushalachrekar3@gmail.com": { username: "Kaushal3", roles: ["staff"] },
+      // Add more users here:
+      // "staff1@example.com": { username: "staff1", roles: ["staff"] },
+      // "manager@example.com": { username: "manager1", roles: ["admin"] },
+    };
+
+    // --- Firebase Config ---
     const firebaseConfig = {
       apiKey: "AIzaSyCXQyQRw4JRaWDNbca4YQkanMWnfu8SuH0",
       authDomain: "pathologylab-9d156.firebaseapp.com",
@@ -191,6 +235,7 @@
       measurementId: "G-S279W29G9Q"
     };
 
+    // --- Init ---
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     let db = null;
@@ -208,6 +253,7 @@
     const contentFrame = document.getElementById('contentFrame');
     const sideNav      = document.getElementById('sideNav');
 
+    // ======== Helpers ========
     function initialsFromName(name, email) {
       const source = (name || email || 'U').trim();
       const parts = source.split(/\s+/).filter(Boolean);
@@ -215,49 +261,103 @@
       return source.slice(0,2).toUpperCase();
     }
 
-    function applyRoleVisibility(roleOrRoles) {
-      const roleSet = new Set();
-      if (Array.isArray(roleOrRoles)) roleOrRoles.forEach(r => roleSet.add(String(r).toLowerCase()));
-      else if (roleOrRoles) String(roleOrRoles).split(',').map(s=>s.trim().toLowerCase()).forEach(r => roleSet.add(r));
-      document.querySelectorAll('[data-roles]').forEach(el => {
-        const allowed = String(el.getAttribute('data-roles') || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-        if (allowed.length && roleSet.size) {
-          const match = allowed.some(r => roleSet.has(r));
-          if (!match) el.classList.add('hidden');
-        }
-      });
-    }
-
-    async function fetchUserRole(uid) {
-      if (!db) return null;
-      try {
-        const snap = await getDoc(doc(db, 'users', uid));
-        if (snap.exists()) {
-          const data = snap.data();
-          return data?.roles ?? data?.role ?? null;
-        }
-      } catch (err) { console.warn('Role fetch failed:', err); }
+    function getUserRecordByEmail(email) {
+      if (!email) return null;
+      const key = String(email).trim().toLowerCase();
+      // match case-insensitively
+      for (const e in USER_DIRECTORY) {
+        if (e.toLowerCase() === key) return USER_DIRECTORY[e];
+      }
       return null;
     }
 
+    // Apply visibility using roles and/or allowed usernames.
+    // If element has data-allow-users, the current username must be included.
+    // If element has data-roles, user must have at least one matching role.
+    function applyVisibilityForUser(userRec) {
+      const username = (userRec?.username || "").toLowerCase().trim();
+      const roles = new Set((userRec?.roles || []).map(r => String(r).toLowerCase()));
+
+      document.querySelectorAll('[data-roles], [data-allow-users]').forEach(el => {
+        let visible = true;
+
+        const allowUsersAttr = el.getAttribute('data-allow-users');
+        if (allowUsersAttr) {
+          const allowUsers = allowUsersAttr.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+          if (allowUsers.length && (!username || !allowUsers.includes(username))) {
+            visible = false;
+          }
+        }
+
+        const rolesAttr = el.getAttribute('data-roles');
+        if (rolesAttr) {
+          const allowedRoles = rolesAttr.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+          if (allowedRoles.length && roles.size > 0) {
+            const match = allowedRoles.some(r => roles.has(r));
+            if (!match) visible = false;
+          } else if (allowedRoles.length && roles.size === 0) {
+            visible = false;
+          }
+        }
+
+        if (!visible) el.classList.add('hidden');
+        else el.classList.remove('hidden');
+      });
+    }
+
+    // ======== Auth Guard + Username Display ========
     onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.replace('login.html'); return; }
-      const name = user.displayName || '';
+      if (!user) {
+        window.location.replace('login.html');
+        return;
+      }
+
       const email = user.email || '';
-      userNameEl.textContent  = name || '(No display name)';
+      const userRec = getUserRecordByEmail(email);
+
+      // Determine username to display:
+      const username = userRec?.username || user.displayName || '';
+      // Update UI
+      userNameEl.textContent  = username || '(No username configured)';
       userEmailEl.textContent = email || '(No email)';
-      userAvatar.textContent  = initialsFromName(name, email);
-      const roleOrRoles = await fetchUserRole(user.uid);
-      if (roleOrRoles) applyRoleVisibility(roleOrRoles);
+      userAvatar.textContent  = initialsFromName(username, email);
+
+      // Sync Firebase displayName with our directory username for consistency (optional but helpful)
+      try {
+        if (username && user.displayName !== username) {
+          await updateProfile(user, { displayName: username });
+        }
+      } catch (err) {
+        console.warn('updateProfile failed (non-critical):', err);
+      }
+
+      // Role/username-based visibility
+      applyVisibilityForUser(userRec);
+
+      // (Optional) If you'd like to fetch additional info from Firestore, you still can:
+      // const roleDoc = await getDoc(doc(db, 'users', user.uid));
+      // and merge with userRec if needed.
     });
 
+    // --- Sign Out ---
     signOutBtn.addEventListener('click', async () => {
-      try { await signOut(auth); } catch (e) { alert('Failed to sign out. Please try again.'); console.error(e); }
+      try { await signOut(auth); } catch (e) {
+        alert('Failed to sign out. Please try again.');
+        console.error(e);
+      }
     });
 
-    // Mobile Sidebar toggle
-    function openSidebar() { sidebar.style.transform = 'translateX(0)'; overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto'; }
-    function closeSidebar() { sidebar.style.transform = ''; overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none'; }
+    // ======= Mobile Sidebar toggle =======
+    function openSidebar() {
+      sidebar.style.transform = 'translateX(0)';
+      overlay.style.opacity = '1';
+      overlay.style.pointerEvents = 'auto';
+    }
+    function closeSidebar() {
+      sidebar.style.transform = '';
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+    }
     toggle?.addEventListener('click', () => {
       const isOpen = sidebar.style.transform === 'translateX(0px)' || sidebar.style.transform === 'translateX(0)';
       isOpen ? closeSidebar() : openSidebar();
@@ -267,7 +367,7 @@
     function handleMQ(e){ if (e.matches) closeSidebar(); }
     mq.addEventListener ? mq.addEventListener('change', handleMQ) : mq.addListener(handleMQ);
 
-    // Active Tab Highlighting
+    // ======= ACTIVE TAB HIGHLIGHTING =======
     function setActiveLink(targetPath) {
       const links = sideNav.querySelectorAll('.nav-link');
       links.forEach(a => {
@@ -284,7 +384,7 @@
       }
     }
 
-    // SPA: Load into content without full page reload
+    // ======= SPA: LOAD INTO CONTENT (no full reload) =======
     function loadSection(targetPath, push = true) {
       if (!targetPath) return;
       if (contentFrame.getAttribute('src') === targetPath) return;
@@ -313,12 +413,12 @@
       loadSection(targetPath, false);
     });
 
-    // Boot
+    // Boot: load from hash or default to entry.html
     const bootPath = decodeURIComponent((location.hash || '').slice(1)) || 'entry.html';
     setActiveLink(bootPath);
     if (contentFrame.getAttribute('src') !== bootPath) contentFrame.src = bootPath;
 
-    // Content height: stretch to bottom
+    // ======= CONTENT HEIGHT: stretch to bottom of screen =======
     function computeContentHeight() {
       const rect = contentCard.getBoundingClientRect();
       const bottomPadding = 16;
