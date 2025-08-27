@@ -58,19 +58,6 @@
 
   <div class="min-h-screen flex items-center justify-center p-4 sm:p-6">
     <div class="w-full max-w-[1400px]">
-      <!-- Header -->
-      <header class="mx-auto max-w-2xl text-center mb-6 sm:mb-8">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass shadow-soft text-xs text-slate-600">
-          <span class="w-2 h-2 rounded-full bg-gradient-to-r from-sky-400 via-indigo-500 to-pink-400"></span>
-          <span>Goodness Healthcare · Secure Access</span>
-        </div>
-        <h1 class="mt-4 text-2xl sm:text-3xl font-semibold tracking-tight">
-          Pathology Lab Login
-        </h1>
-        <p class="mt-2 text-slate-600 text-sm sm:text-base">
-          Access your lab management dashboard to manage entries, schedules, and reports.
-        </p>
-      </header>
 
       <!-- Main content -->
       <main class="mx-auto max-w-md">
@@ -83,12 +70,12 @@
           <div class="p-4 sm:p-6 space-y-6">
             <!-- Brand / logo row -->
             <div class="flex items-center gap-3">
-              <div class="h-12 w-12 rounded-xl overflow-hidden ring-1 ring-slate-200 shadow bg-white/80 flex items-center justify-center">
-                <img src="./Logo.png" alt="Goodness Healthcare Logo" class="h-full w-full object-contain p-1" />
+              <div class="h-12 w-12 rounded-xl overflow-hidden ring-1 ring-slate-200 shadow bg-white/80">
+                <img src="./Logo.png" alt="Goodness Healthcare Logo" class="h-full w-full object-cover" />
               </div>
               <div class="leading-tight">
-                <div class="text-sm font-medium text-slate-700">Goodness Healthcare</div>
-                <div class="text-xs text-slate-500">Pathology Lab Management System</div>
+                <div class="text-sm font-bold text-slate-1000">Goodness Healthcare</div>
+                <div class="text-xs text-slate-500">Pathology Lab Login</div>
               </div>
             </div>
 
@@ -116,7 +103,6 @@
                 </div>
                 <div class="mt-1 flex items-center justify-between">
                   <p class="text-xs text-slate-500">Minimum 6 characters.</p>
-                  <a href="#" class="text-xs text-indigo-600 hover:text-indigo-700">Forgot password?</a>
                 </div>
               </div>
 
@@ -131,10 +117,6 @@
                   </span>
                 </button>
 
-                <button type="button"
-                  class="w-full rounded-lg bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 hover:ring-slate-300 transition px-4 py-2.5 text-sm font-medium">
-                  Continue as Viewer
-                </button>
               </div>
 
               <p id="errBox" class="text-sm text-red-600 hidden"></p>
@@ -200,8 +182,6 @@
     togglePasswordBtn.addEventListener("click", () => {
       const isHidden = passwordInput.type === "password";
       passwordInput.type = isHidden ? "text" : "password";
-      togglePasswordBtn.setAttribute("aria-pressed", String(isHidden));
-      togglePasswordBtn.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
       eyeIcon.classList.toggle("fa-eye");
       eyeIcon.classList.toggle("fa-eye-slash");
     });
