@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Schedule | Lab Appointments</title>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Typography + base */
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif; }
+    .glass {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(148,163,184,0.22);
+      border-radius: 1rem;
+      box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+      transition: box-shadow .18s ease, transform .18s ease;
+    }
+    .glass.hover-lift:hover { transform: translateY(-2px); box-shadow: 0 16px 28px rgba(15,23,42,0.10); }
+    .brand-gradient { background-image: linear-gradient(to right, #38bdf8, #6366f1, #f472b6); }
+    .chip {
+      display:inline-flex; align-items:center; gap:.375rem; padding:.25rem .6rem; border-radius:9999px;
+      font-size:.75rem; line-height:1rem; font-weight:600; color:white;
+      background-image: linear-gradient(to right, #38bdf8, #6366f1, #f472b6);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4);
+    }
+    .chip-pp { background-image: linear-gradient(to right, #22c55e, #06b6d4); }
+
+    /* Buttons */
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.625rem 1rem; border-radius:.75rem; font-weight:600; line-height:1.1; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
+    .btn-primary { color:#fff; background-image: linear-gradient(to right, #38bdf8, #6366f1, #f472b6); box-shadow: 0 6px 14px rgba(99,102,241,0.25); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(99,102,241,0.28); filter: brightness(1.02); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:focus-visible { outline:none; box-shadow: 0 0 0 4px rgba(99,102,241,0.25); }
+    .btn-secondary { background:#fff; color:#334155; border:1px solid #e2e8f0; }
+    .btn-secondary:hover { background:#f8fafc; }
+
+    /* Inputs */
+    .input { width:100%; background:#fff; border-radius:.75rem; padding:.75rem 1rem; border:1px solid rgba(148,163,184,0.35); outline:none; transition: box-shadow .18s ease, border-color .18s ease; }
+    .input:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.27); border-color: rgba(99,102,241,0.45); }
+
+    /* Map responsive container */
+    .map-wrap { width: 100%; max-width: 100%; overflow: hidden; border-radius: .75rem; }
+    .map-wrap iframe { width: 100% !important; max-width: 100% !important; height: 240px; border: 0; display: block; border-radius: .75rem; }
+    @media (min-width: 640px) { .map-wrap iframe { height: 300px; } }
+
+    /* Dialog backdrop */
+    dialog::backdrop { background: rgba(2,6,23,0.25); }
+
+    /* --- Tubes & Syringes visual cards --- */
+    .tube-grid, .req-grid {
+      display: grid;
+      grid-template-columns: repeat( auto-fit, minmax(150px, 1fr) );
+      gap: .75rem;
+    }
+    @media (min-width: 640px) { .tube-grid, .req-grid { gap: 1rem; } }
+    .tube-card, .req-card {
+      display:flex; align-items:center; gap:.75rem; padding:.625rem .75rem;
+      border-radius: .875rem; background: rgba(255,255,255,0.8);
+      border:1px solid rgba(148,163,184,0.22); box-shadow: 0 2px 10px rgba(15,23,42,0.06);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .tube-card:hover, .req-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(15,23,42,0.10); }
+    .tube-text .name, .req-text .name { font-weight:600; color:#0f172a; font-size:.9rem; }
+    .tube-text .qty, .req-text .qty { color:#475569; font-size:.8rem; }
+
+    /* Totals badges */
+    .totals { display:flex; flex-wrap:wrap; gap:.5rem; }
+    .total-badge { background:#fff; border:1px solid rgba(148,163,184,0.3); padding:.25rem .5rem; border-radius:.625rem; font-size:.8rem; color:#0f172a; }
+
+    /* Smaller syringe sizing */
+    .syringe { width: 26px; height: 26px; flex: 0 0 auto; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-sky-50 via-indigo-50 to-rose-50 text-slate-800">
+  <!-- Header -->
+  <header class="sticky top-0 z-30 w-full glass border-b border-white/40">
+    <div class="max-w-[1400px] mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
+      <h1 class="text-xl sm:text-2xl font-semibold text-slate-900">Schedule</h1>
+      <div id="countLabel" class="text-sm text-slate-600">Loading…</div>
+    </div>
+  </header>
+
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
+    <!-- Filters -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2" for="dateFilter">Date</label>
+        <input type="date" id="dateFilter" class="input" />
+        <p class="mt-1 text-xs text-slate-500">Pick visit date</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2" for="phlebFilter">Phlebotomist</label>
+        <select id="phlebFilter" class="input"><option value="">All</option></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2" for="typeFilter">Visit Type</label>
+        <select id="typeFilter" class="input"><option value="">All</option></select>
+        <p class="mt-1 text-xs text-slate-500">Options come from your sheet.</p>
+      </div>
+    </section>
+
+    <!-- Cards: 2 columns on desktop -->
+    <main>
+      <div id="cards" class="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-2"></div>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <dialog id="details" class="rounded-2xl glass p-0 w-full max-w-2xl">
+    <div class="flex items-center justify-between border-b border-white/40 px-4 sm:px-6 py-3">
+      <strong id="modalTitle" class="text-lg sm:text-xl font-semibold"></strong>
+      <button id="closeModal" class="btn btn-secondary text-sm">Close</button>
+    </div>
+    <div id="modalBody" class="px-4 sm:px-6 py-4 space-y-4 text-slate-700 text-base leading-relaxed"></div>
+  </dialog>
+
+  <script>
+    /* =======================
+       CONFIG: Paste your URL
+       ======================= */
+    const SHEET_JSON_ENDPOINT = "https://script.google.com/macros/s/AKfycbwf4QHaVsPByEglHnkcCxqhEiBDYUdRtK-iOpo_jJ4eUcdatDRB8Phbf1-r05t6fHU/exec";
+
+    /* =======================
+       Helpers & DOM
+       ======================= */
+    const $ = sel => document.querySelector(sel);
+    const cardsEl = $('#cards');
+    const dateEl = $('#dateFilter');
+    const phlebEl = $('#phlebFilter');
+    const typeEl  = $('#typeFilter');
+    const countLabel = $('#countLabel');
+
+    function toInputDateLocal(d=new Date()){
+      const pad=n=>String(n).padStart(2,'0');
+      return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+    }
+    function parseDateFlexible(s){
+      if(!s) return null;
+      let d = new Date(s);
+      if(!isNaN(d)) return d;
+      const m = String(s).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+      if(m){
+        const [_,dd,mm,yy] = m;
+        const year = (yy.length===2? Number('20'+yy): Number(yy));
+        return new Date(year, Number(mm)-1, Number(dd));
+      }
+      return null;
+    }
+    function parseDateTime(row){
+      const base = parseDateFlexible(row.date);
+      if(!base) return null;
+      const tStr = (row.time_of_visit && String(row.time_of_visit).trim()) ? row.time_of_visit : null;
+      if(!tStr) return new Date(base.getFullYear(), base.getMonth(), base.getDate(), 0, 0, 0);
+      const t = String(tStr).toLowerCase().replace(/\./g,':').trim();
+      let h=0,m=0; const ampm = /(am|pm)$/.test(t) ? t.slice(-2) : '';
+      const nums = t.replace(/\s*(am|pm)\s*$/,'').split(':');
+      h=Number(nums[0])||0; m=Number(nums[1])||0;
+      if(ampm==='pm' && h<12) h+=12; if(ampm==='am' && h===12) h=0;
+      return new Date(base.getFullYear(), base.getMonth(), base.getDate(), h, m, 0);
+    }
+    function formatTime(dt){ try { return dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); } catch { return ''; } }
+    function sanitizeHTML(str){ const div=document.createElement('div'); div.textContent=str??''; return div.innerHTML; }
+    function truthy(v){ return v!==undefined && v!==null && String(v).trim()!==''; }
+
+    // Normalize any iframe HTML pasted from Sheets: remove fixed width/height, add responsive class
+    function normalizeIframe(html) {
+      const div = document.createElement('div'); div.innerHTML = html;
+      const iframe = div.querySelector('iframe');
+      if (iframe) { iframe.removeAttribute('width'); iframe.removeAttribute('height'); iframe.classList.add('w-full'); iframe.removeAttribute('style'); }
+      return `<div class="map-wrap">${div.innerHTML}</div>`;
+    }
+
+    /* ---------- SVG builders ---------- */
+    // Thin blood tube (no blood fill)
+    function bloodTubeSVG(capColor = '#7c3aed') {
+      return `
+        <svg width="28" height="56" viewBox="0 0 28 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <rect x="4" y="0.5" width="20" height="10" rx="3" fill="${capColor}" stroke="rgba(51,65,85,0.45)" stroke-width="1"/>
+          <rect x="8" y="9.5" width="12" height="4" rx="2" fill="${capColor}" opacity=".75"/>
+          <rect x="6" y="12" width="16" height="42.5" rx="8" fill="url(#g1)" stroke="rgba(148,163,184,0.8)" stroke-width="1"/>
+          <path d="M9 22 h4 M9 27 h4 M9 32 h4 M9 37 h4" stroke="rgba(100,116,139,0.45)" stroke-width="1" stroke-linecap="round"/>
+          <path d="M12 14 v38" stroke="rgba(255,255,255,0.55)" stroke-width="2" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="g1" x1="6" y1="12" x2="22" y2="54.5" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#f8fafc"/><stop offset="1" stop-color="#e2e8f0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      `;
+    }
+    // Thick urine container (with urine fill)
+    function urineJarSVG(lidColor = '#d97706', urineColor = '#facc15') {
+      return `
+        <svg width="40" height="48" viewBox="0 0 40 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <rect x="4" y="1" width="32" height="8" rx="3" fill="${lidColor}" stroke="rgba(71,85,105,0.6)" stroke-width="1"/>
+          <rect x="8" y="9" width="24" height="5" rx="2.5" fill="${lidColor}" opacity=".8"/>
+          <rect x="6" y="12" width="28" height="34" rx="6" fill="url(#jg)" stroke="rgba(148,163,184,0.9)" stroke-width="1"/>
+          <rect x="7.5" y="28" width="25" height="16.5" rx="5" fill="${urineColor}" opacity=".95"/>
+          <path d="M12 14 v30" stroke="rgba(255,255,255,0.55)" stroke-width="2" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="jg" x1="6" y1="12" x2="34" y2="46" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#f8fafc"/><stop offset="1" stop-color="#e2e8f0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      `;
+    }
+    // Small syringe; color varies by size
+    function syringeSVG(color = '#0ea5e9') {
+      return `
+        <svg class="syringe" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <rect x="4" y="28" width="8" height="8" rx="2" fill="#e2e8f0" stroke="#64748b" stroke-width="1.4"/>
+          <rect x="10" y="30" width="12" height="4" rx="2" fill="#e2e8f0" stroke="#64748b" stroke-width="1.4"/>
+          <rect x="20" y="23" width="26" height="18" rx="4" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+          <path d="M26 26 v12 M30 26 v12 M34 26 v12 M38 26 v12" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+          <rect x="46" y="30" width="6" height="4" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.4"/>
+          <path d="M52 32 h8" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      `;
+    }
+    function syringeColorFor(label='') {
+      const L = label.toLowerCase();
+      if (L.includes('2ml') || L.includes('2 ml')) return '#0ea5e9';   // teal-ish (Tailwind teal/sky blend)
+      if (L.includes('5ml') || L.includes('5 ml')) return '#6366f1';   // indigo
+      if (L.includes('10ml')|| L.includes('10 ml'))return '#f43f5e';   // rose
+      return '#0ea5e9';
+    }
+
+    let RAW_ROWS = [];
+
+    /* =======================
+       Data load (+ PP expand)
+       ======================= */
+    async function load(){
+      try{
+        const url = SHEET_JSON_ENDPOINT + (SHEET_JSON_ENDPOINT.includes('?') ? '&' : '?') + 't=' + Date.now();
+        const res = await fetch(url, { mode:'cors', cache:'no-store' });
+        if(!res.ok) throw new Error('Network ' + res.status);
+        let data = await res.json();
+        if(!Array.isArray(data) && Array.isArray(data.data)) data = data.data;
+        if(!Array.isArray(data)) throw new Error('Response is not an array');
+
+        const baseRows = data.map(r => ({
+          id: r.id ?? '',
+          patient_name: r.patient_name ?? '',
+          age: r.age ?? '',
+          gender: r.gender ?? '',
+          contact: r.contact ?? '',
+          alt_contact: r.alt_contact ?? '',
+          address: r.address ?? '',
+          map_iframe: r.map_iframe ?? '',
+          tests: r.tests ?? '',
+          tubes_purple: Number(r.tubes_purple || 0),
+          tubes_red: Number(r.tubes_red || 0),
+          tubes_gray: Number(r.tubes_gray || 0),
+          tubes_blue: Number(r.tubes_blue || 0),
+          tubes_yellow: Number(r.tubes_yellow || 0),
+          tubes_urine: Number(r.tubes_urine || 0),
+          syringes: r.syringes ?? '',
+          doctor: r.doctor ?? '',
+          date: r.date ?? '',
+          time_of_visit: r.time_of_visit ?? '',
+          pp_time: r.pp_time ?? '',
+          visit_type: r.visit_type ?? '',
+          phlebotomist: r.phlebotomist ?? '',
+          final_price: r.final_price ?? '',
+          payment_status: r.payment_status ?? '',
+          pending_payment: r.pending_payment ?? '',
+          completion: r.completion ?? ''
+        }));
+
+        // Expand PP rows into separate appointments when pp_time is present
+        const expanded = [];
+        for (const r of baseRows) {
+          expanded.push({ ...r, is_pp: false });
+          if (truthy(r.pp_time)) {
+            expanded.push({ ...r, id: String(r.id || '') + '-PP', is_pp: true, time_of_visit: r.pp_time });
+          }
+        }
+
+        RAW_ROWS = expanded;
+        buildPhlebFilter();
+        buildTypeFilter();   // auto-populate Visit Type from data
+        render();
+      }catch(err){
+        console.error(err);
+        cardsEl.innerHTML = '<div class="col-span-full text-center text-slate-600">Failed to load data</div>';
+        countLabel.textContent = 'Load failed';
+      }
+    }
+
+    function buildPhlebFilter(){
+      const set = new Set();
+      RAW_ROWS.forEach(r => { const p=(r.phlebotomist||'').trim(); if(p) set.add(p); });
+      const current = phlebEl.value;
+      phlebEl.innerHTML = '<option value="">All</option>' + Array.from(set).sort((a,b)=>a.localeCompare(b)).map(v=>`<option>${sanitizeHTML(v)}</option>`).join('');
+      if(Array.from(set).map(v=>v.toLowerCase()).includes((current||'').toLowerCase())) phlebEl.value = current;
+    }
+    function buildTypeFilter(){
+      const set = new Set();
+      RAW_ROWS.forEach(r => { const t=(r.visit_type||'').trim(); if(t) set.add(t); });
+      const current = typeEl.value;
+      typeEl.innerHTML = '<option value="">All</option>' + Array.from(set).sort((a,b)=>a.localeCompare(b)).map(v=>`<option>${sanitizeHTML(v)}</option>`).join('');
+      if(Array.from(set).map(v=>v.toLowerCase()).includes((current||'').toLowerCase())) typeEl.value = current;
+    }
+
+    /* =======================
+       Filter & sort
+       ======================= */
+    function includeByBaseRule(r){
+      const completion = String(r.completion||'').toLowerCase().trim();
+      const hasPhleb = truthy(r.phlebotomist);
+      return hasPhleb || completion === 'scheduled' || completion === 'assigned phlebotomist';
+    }
+    function applyFilters(){
+      const selDate = dateEl.value;
+      const selPhleb = String(phlebEl.value||'').toLowerCase().trim();
+      const selType  = String(typeEl.value||'').toLowerCase().trim();
+
+      const filtered = RAW_ROWS.filter(r=>{
+        if(!includeByBaseRule(r)) return false;
+        if(selDate){
+          const d = parseDateFlexible(r.date);
+          if(!d || toInputDateLocal(d) !== selDate) return false;
+        }
+        if(selPhleb && String(r.phlebotomist||'').toLowerCase().trim() !== selPhleb) return false;
+        if(selType  && String(r.visit_type||'').toLowerCase().trim()   !== selType)  return false;
+        return true;
+      });
+
+      filtered.sort((a,b)=>{
+        const da = parseDateTime(a);
+        const db = parseDateTime(b);
+        if(!da && !db) return 0; if(!da) return 1; if(!db) return -1;
+        return da - db;
+      });
+
+      return filtered;
+    }
+
+    /* =======================
+       Render
+       ======================= */
+    function render(){
+      const rows = applyFilters();
+      countLabel.textContent = rows.length + " shown";
+
+      if(!rows.length){
+        cardsEl.innerHTML = '<div class="col-span-full text-center text-slate-600">No appointments found</div>';
+        return;
+      }
+
+      cardsEl.innerHTML = rows.map(r=>{
+        const dt = parseDateTime(r);
+        const when = dt ? formatTime(dt) : (r.time_of_visit || '—');
+        const timeLabel = r.is_pp ? 'PP' : 'Visit';
+        const completion = String(r.completion||'').toLowerCase().trim();
+        const scheduledChip = (completion==='scheduled') ? '<span class="chip">Scheduled</span>' : '';
+        const ppChip = r.is_pp ? '<span class="chip chip-pp">PP Visit</span>' : '';
+
+        return `
+          <article class="glass hover-lift rounded-2xl p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-2 gap-2">
+              <h2 class="text-lg sm:text-xl font-semibold">${sanitizeHTML(r.patient_name || 'Unknown')}</h2>
+              <div class="flex gap-2">${scheduledChip}${ppChip}</div>
+            </div>
+            <div class="space-y-1 text-sm text-slate-600">
+              <div><span class="font-medium text-slate-800">${sanitizeHTML(timeLabel)} Time:</span> ${sanitizeHTML(when)}</div>
+              <div><span class="font-medium text-slate-800">Phlebotomist:</span> ${sanitizeHTML(r.phlebotomist || 'Unassigned')}</div>
+              <div><span class="font-medium text-slate-800">Visit Type:</span> ${sanitizeHTML(r.visit_type || '—')}</div>
+            </div>
+            <button data-id="${sanitizeHTML(r.id)}" class="btn btn-primary mt-3 view focus:ring-4 focus:ring-indigo-300/40">View Details</button>
+          </article>
+        `;
+      }).join('');
+
+      cardsEl.querySelectorAll('button.view').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const row = RAW_ROWS.find(x => String(x.id)===String(btn.dataset.id));
+          if(row) openDetails(row);
+        });
+      });
+    }
+
+    /* =======================
+       Modal (full details)
+       ======================= */
+    function openDetails(r){
+      $('#modalTitle').textContent = (r.is_pp ? '[PP] ' : '') + (r.patient_name || 'Details');
+
+      const tests = String(r.tests||'').split(',').map(s=>s.trim()).filter(Boolean);
+      const dt = parseDateTime(r);
+      const datePretty = (parseDateFlexible(r.date) || '').toString().slice(0, 15);
+      const timePretty = dt ? formatTime(dt) : (r.time_of_visit || '—');
+
+      // Tube defs (no blood fill in SVG)
+      const tubeDefs = [
+        { key:'tubes_red',    name:'Red Tube',    cap:'#ef4444',  code:'red' },
+        { key:'tubes_purple', name:'Purple Tube', cap:'#7c3aed',  code:'purple' },
+        { key:'tubes_yellow', name:'Yellow Tube', cap:'#eab308',  code:'yellow' },
+        { key:'tubes_blue',   name:'Blue Tube',   cap:'#2563eb',  code:'blue' },
+        { key:'tubes_gray',   name:'Gray Tube',   cap:'#64748b',  code:'gray' },
+        { key:'tubes_urine',  name:'Urine Container', cap:'#d97706', type:'urine', code:'urine' }
+      ];
+
+      // Build tube cards (only > 0)
+      const tubeCards = tubeDefs
+        .map(d => ({ ...d, qty: Number(r[d.key] || 0) }))
+        .filter(d => d.qty > 0)
+        .map(d => {
+          const icon = d.type === 'urine' ? urineJarSVG(d.cap, '#facc15') : bloodTubeSVG(d.cap);
+          return `
+            <div class="tube-card">
+              ${icon}
+              <div class="tube-text">
+                <div class="name">${sanitizeHTML(d.name)}</div>
+                <div class="qty">× ${d.qty}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      // Totals (Red, Purple, Yellow, Blue, Gray) — future reference
+      const totals = {
+        red:    Number(r.tubes_red    || 0),
+        purple: Number(r.tubes_purple || 0),
+        yellow: Number(r.tubes_yellow || 0),
+        blue:   Number(r.tubes_blue   || 0),
+        gray:   Number(r.tubes_gray   || 0),
+      };
+      const totalsHTML = `
+        <div class="totals">
+          <span class="total-badge">Red: ${totals.red}</span>
+          <span class="total-badge">Purple: ${totals.purple}</span>
+          <span class="total-badge">Yellow: ${totals.yellow}</span>
+          <span class="total-badge">Blue: ${totals.blue}</span>
+          <span class="total-badge">Gray: ${totals.gray}</span>
+        </div>
+      `;
+
+      // Syringe cards (small icons; color by size)
+      let reqCards = '';
+      const syrRaw = String(r.syringes || '').trim();
+      if (syrRaw) {
+        const items = syrRaw.split(',').map(s=>s.trim()).filter(Boolean);
+        const freq = new Map();
+        for (const it of items) {
+          const m = it.match(/^(.+?)\s*[x×]\s*(\d+)$/i);
+          if (m) {
+            const label = m[1].trim();
+            const cnt = Math.max(1, parseInt(m[2],10));
+            freq.set(label, (freq.get(label)||0) + cnt);
+          } else {
+            const num = parseInt(it,10);
+            if (!isNaN(num)) freq.set('Syringe 2ml', (freq.get('Syringe 2ml')||0) + num);
+            else freq.set(it, (freq.get(it)||0) + 1);
+          }
+        }
+        reqCards = Array.from(freq.entries()).map(([label, qty]) => `
+          <div class="req-card">
+            ${syringeSVG(syringeColorFor(label))}
+            <div class="req-text">
+              <div class="name">${sanitizeHTML(label)}</div>
+              <div class="qty">× ${qty}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Fallback: numeric syringe count only
+      if (!reqCards && !isNaN(parseInt(syrRaw,10)) && parseInt(syrRaw,10) > 0) {
+        const qty = parseInt(syrRaw,10);
+        reqCards = `
+          <div class="req-card">
+            ${syringeSVG(syringeColorFor('2ml'))}
+            <div class="req-text"><div class="name">Syringe 2ml</div><div class="qty">× ${qty}</div></div>
+          </div>
+        `;
+      }
+
+      // Tests list
+      const testsHTML = tests.length
+        ? `<ul class="list-disc list-inside space-y-0.5">${tests.map(t=>`<li>${sanitizeHTML(t)}</li>`).join('')}</ul>`
+        : '<div class="text-slate-500">—</div>';
+
+      // Map
+      let mapHTML = '';
+      const m = String(r.map_iframe || '').trim();
+      if(m){
+        if(m.includes('<iframe')) mapHTML = normalizeIframe(m);
+        else {
+          const src = m.startsWith('http') ? m : 'https://www.google.com/maps?q=' + encodeURIComponent(m);
+          mapHTML = `<div class="map-wrap"><iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${src}"></iframe></div>`;
+        }
+      }
+
+      $('#modalBody').innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><div class="text-xs text-slate-500">Age / Gender</div><div class="font-medium">${sanitizeHTML(r.age||'—')} / ${sanitizeHTML(r.gender||'—')}</div></div>
+          <div><div class="text-xs text-slate-500">Contact</div><div class="font-medium">${sanitizeHTML(r.contact||'—')}</div></div>
+          <div><div class="text-xs text-slate-500">Alt. Contact</div><div class="font-medium">${sanitizeHTML(r.alt_contact||'—')}</div></div>
+          <div class="sm:col-span-2"><div class="text-xs text-slate-500">Address</div><div class="font-medium">${sanitizeHTML(r.address||'—')}</div></div>
+          <div><div class="text-xs text-slate-500">Doctor</div><div class="font-medium">${sanitizeHTML(r.doctor||'—')}</div></div>
+          <div><div class="text-xs text-slate-500">Visit Type</div><div class="font-medium">${sanitizeHTML(r.visit_type||'—')}</div></div>
+          <div><div class="text-xs text-slate-500">Phlebotomist</div><div class="font-medium">${sanitizeHTML(r.phlebotomist||'—')}</div></div>
+          <div><div class="text-xs text-slate-500">Date</div><div class="font-medium">${sanitizeHTML(datePretty)}</div></div>
+          <div><div class="text-xs text-slate-500">Time</div><div class="font-medium">${sanitizeHTML(timePretty)}</div></div>
+          <div><div class="text-xs text-slate-500">Final Price</div><div class="font-medium">₹ ${sanitizeHTML(r.final_price||'—')}</div></div>
+          <div><div class="text-xs text-slate-500">Payment</div><div class="font-medium">${sanitizeHTML(r.payment_status||'—')} ${truthy(r.pending_payment)? '(Due: ₹ '+sanitizeHTML(r.pending_payment)+')':''}</div></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div class="glass rounded-xl p-3">
+            <div class="text-xs text-slate-500 mb-2">Tests</div>
+            ${testsHTML}
+          </div>
+
+          <div class="glass rounded-xl p-3">
+            <div class="text-xs text-slate-500 mb-2">Syringes</div>
+            ${reqCards ? `<div class="req-grid">${reqCards}</div>` : '<div class="text-slate-500">—</div>'}
+          </div>
+
+          <div class="glass rounded-xl p-3 sm:col-span-2">
+            <div class="text-xs text-slate-500 mb-2">Tubes</div>
+            ${tubeCards ? `<div class="tube-grid">${tubeCards}</div>` : '<div class="text-slate-500">—</div>'}
+           
+          </div>
+
+          <div class="sm:col-span-2">
+            ${mapHTML || ''}
+          </div>
+        </div>
+      `;
+
+      const dlg = $('#details');
+      if(typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open','');
+    }
+
+    $('#closeModal').addEventListener('click', ()=>{ const dlg = $('#details'); dlg.close?.(); dlg.removeAttribute('open'); });
+
+    /* =======================
+       Events
+       ======================= */
+    dateEl.addEventListener('change', render);
+    phlebEl.addEventListener('change', render);
+    typeEl.addEventListener('change', render);
+
+    /* =======================
+       Init + live polling
+       ======================= */
+    (function init(){
+      dateEl.value = toInputDateLocal(new Date());
+      load();
+      setInterval(load, 5000);
+    })();
+  </script>
+</body>
+</html>
